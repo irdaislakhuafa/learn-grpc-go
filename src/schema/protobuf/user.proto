@@ -1,0 +1,14 @@
+// use protobuf syntax version 3 
+syntax = "proto3";
+
+// package of protobuf, here my package is goproto
+package goproto;
+
+// i use go_package for generated protobuf because here i use Go programming language
+option go_package = "pb"; 
+
+// for empty RPC service parameter
+message Empty {}
+
+
+
