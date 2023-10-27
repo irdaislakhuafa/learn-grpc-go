@@ -4,6 +4,9 @@ syntax = "proto3";
 // package of protobuf, here my package is goproto
 package protobuf;
 
+// imports external file protobuf
+import "src/schema/protobuf/address.proto";
+
 // i use go_package for generated protobuf because here i use Go programming language
 option go_package = "generated/pb";
 
@@ -21,14 +24,10 @@ message User {
   repeated string hobbies = 4;
 
   // use custom/object datatype for address user
-  Address address = 5;
-}
+  repeated Address address = 5;
 
-// as entity address for protobuf schema
-message Address {
-  string id = 1;
-  string country = 2;
-  string province = 3;
-  string regency = 4;
-  string sub_district = 5;
+  // use embeded protobuf message inside protobuf message
+  message Overview {
+    string intro = 1;
+  }
 }
