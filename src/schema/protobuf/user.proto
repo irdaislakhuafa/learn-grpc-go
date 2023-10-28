@@ -11,8 +11,49 @@ import "pagination.proto";
 // i use go_package for generated protobuf because here i use Go programming language
 option go_package = "generated/pb";
 
+// list services
+service UserService {
+  rpc GetUsers(Empty) returns (UserResponsePagination);
+  rpc GetUser(GetUserRequest) returns (User);
+  rpc CreateUser(CreateUserRequest) returns (User);
+  rpc UpdateUser(UpdateUserRequest) returns (User);
+  rpc DeleteUser(DeleteUserRequest) returns (User);
+}
+
 // for empty RPC service parameter
 message Empty {}
+
+// as user request
+message GetUserRequest {
+  string id = 1;
+}
+
+// for request create user
+message CreateUserRequest {
+  string name = 1;
+  uint64 age = 2;
+  repeated string hobbies = 3;
+  repeated Address address = 4;
+  message Overview {
+    string intro = 1;
+  }
+}
+
+// for request update user
+message UpdateUserRequest {
+  string name = 1;
+  uint64 age = 2;
+  repeated string hobbies = 3;
+  repeated Address address = 4;
+  message Overview {
+    string intro = 1;
+  }
+}
+
+// for request delete user
+message DeleteUserRequest {
+  string id = 1;
+}
 
 // as entity user for protobuf schema
 message User {
