@@ -1,0 +1,15 @@
+// use protobuf 3 syntax
+syntax = "proto3";
+
+package protobuf;
+
+option go_package = "generated/pb";
+
+// as entity address for protobuf schema
+message Address {
+  string id = 1;
+  string country = 2;
+  string province = 3;
+  string regency = 4;
+  string sub_district = 5;
+}
