@@ -34,7 +34,7 @@ message User {
 }
 
 // as response list users with pagination
-message UserResponsePaginatio {
+message UserResponsePagination {
   Pagination pagination = 1;
   repeated User data = 2;
 }
