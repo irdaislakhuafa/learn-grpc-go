@@ -5,7 +5,8 @@ syntax = "proto3";
 package protobuf;
 
 // imports external file protobuf
-import "src/schema/protobuf/address.proto";
+import "address.proto";
+import "pagination.proto";
 
 // i use go_package for generated protobuf because here i use Go programming language
 option go_package = "generated/pb";
@@ -30,4 +31,10 @@ message User {
   message Overview {
     string intro = 1;
   }
+}
+
+// as response list users with pagination
+message UserResponsePaginatio {
+  Pagination pagination = 1;
+  repeated User data = 2;
 }
