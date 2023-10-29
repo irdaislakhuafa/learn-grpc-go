@@ -1,0 +1,15 @@
+version: '3'
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: learn-grpc-go-db
+    networks:
+      - learn-grpc-go
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=learn_grpc_go
+networks:
+  learn-grpc-go: {}
