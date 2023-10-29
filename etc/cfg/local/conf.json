@@ -1,0 +1,17 @@
+{
+	"App": {
+		"Name": "Learn GRPC in Go Language",
+		"Version": "v0.1"
+	},
+	"Database": {
+		"PSQL": {
+			"Driver": "postgres",
+			"Host": "localhost",
+			"Port": 5432,
+			"DB": "learn_grpc_go",
+			"User": "postgres",
+			"Password": "postgres",
+			"SSL": false
+		}
+	}
+}
