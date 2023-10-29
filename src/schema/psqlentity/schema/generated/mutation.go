@@ -48,8 +48,8 @@ type AddressMutation struct {
 	updated_by    *uuid.UUID
 	deleted_at    *time.Time
 	deleted_by    *uuid.UUID
-	is_deleted    *int
-	addis_deleted *int
+	is_deleted    *int64
+	addis_deleted *int64
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Address, error)
@@ -573,13 +573,13 @@ func (m *AddressMutation) ResetDeletedBy() {
 }
 
 // SetIsDeleted sets the "is_deleted" field.
-func (m *AddressMutation) SetIsDeleted(i int) {
+func (m *AddressMutation) SetIsDeleted(i int64) {
 	m.is_deleted = &i
 	m.addis_deleted = nil
 }
 
 // IsDeleted returns the value of the "is_deleted" field in the mutation.
-func (m *AddressMutation) IsDeleted() (r int, exists bool) {
+func (m *AddressMutation) IsDeleted() (r int64, exists bool) {
 	v := m.is_deleted
 	if v == nil {
 		return
@@ -590,7 +590,7 @@ func (m *AddressMutation) IsDeleted() (r int, exists bool) {
 // OldIsDeleted returns the old "is_deleted" field's value of the Address entity.
 // If the Address object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AddressMutation) OldIsDeleted(ctx context.Context) (v int, err error) {
+func (m *AddressMutation) OldIsDeleted(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldIsDeleted is only allowed on UpdateOne operations")
 	}
@@ -605,7 +605,7 @@ func (m *AddressMutation) OldIsDeleted(ctx context.Context) (v int, err error) {
 }
 
 // AddIsDeleted adds i to the "is_deleted" field.
-func (m *AddressMutation) AddIsDeleted(i int) {
+func (m *AddressMutation) AddIsDeleted(i int64) {
 	if m.addis_deleted != nil {
 		*m.addis_deleted += i
 	} else {
@@ -614,7 +614,7 @@ func (m *AddressMutation) AddIsDeleted(i int) {
 }
 
 // AddedIsDeleted returns the value that was added to the "is_deleted" field in this mutation.
-func (m *AddressMutation) AddedIsDeleted() (r int, exists bool) {
+func (m *AddressMutation) AddedIsDeleted() (r int64, exists bool) {
 	v := m.addis_deleted
 	if v == nil {
 		return
@@ -837,7 +837,7 @@ func (m *AddressMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedBy(v)
 		return nil
 	case address.FieldIsDeleted:
-		v, ok := value.(int)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -874,7 +874,7 @@ func (m *AddressMutation) AddedField(name string) (ent.Value, bool) {
 func (m *AddressMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	case address.FieldIsDeleted:
-		v, ok := value.(int)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1037,8 +1037,8 @@ type UserMutation struct {
 	updated_by    *uuid.UUID
 	deleted_at    *time.Time
 	deleted_by    *uuid.UUID
-	is_deleted    *int
-	addis_deleted *int
+	is_deleted    *int64
+	addis_deleted *int64
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*User, error)
@@ -1611,13 +1611,13 @@ func (m *UserMutation) ResetDeletedBy() {
 }
 
 // SetIsDeleted sets the "is_deleted" field.
-func (m *UserMutation) SetIsDeleted(i int) {
+func (m *UserMutation) SetIsDeleted(i int64) {
 	m.is_deleted = &i
 	m.addis_deleted = nil
 }
 
 // IsDeleted returns the value of the "is_deleted" field in the mutation.
-func (m *UserMutation) IsDeleted() (r int, exists bool) {
+func (m *UserMutation) IsDeleted() (r int64, exists bool) {
 	v := m.is_deleted
 	if v == nil {
 		return
@@ -1628,7 +1628,7 @@ func (m *UserMutation) IsDeleted() (r int, exists bool) {
 // OldIsDeleted returns the old "is_deleted" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldIsDeleted(ctx context.Context) (v int, err error) {
+func (m *UserMutation) OldIsDeleted(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldIsDeleted is only allowed on UpdateOne operations")
 	}
@@ -1643,7 +1643,7 @@ func (m *UserMutation) OldIsDeleted(ctx context.Context) (v int, err error) {
 }
 
 // AddIsDeleted adds i to the "is_deleted" field.
-func (m *UserMutation) AddIsDeleted(i int) {
+func (m *UserMutation) AddIsDeleted(i int64) {
 	if m.addis_deleted != nil {
 		*m.addis_deleted += i
 	} else {
@@ -1652,7 +1652,7 @@ func (m *UserMutation) AddIsDeleted(i int) {
 }
 
 // AddedIsDeleted returns the value that was added to the "is_deleted" field in this mutation.
-func (m *UserMutation) AddedIsDeleted() (r int, exists bool) {
+func (m *UserMutation) AddedIsDeleted() (r int64, exists bool) {
 	v := m.addis_deleted
 	if v == nil {
 		return
@@ -1875,7 +1875,7 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedBy(v)
 		return nil
 	case user.FieldIsDeleted:
-		v, ok := value.(int)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1924,7 +1924,7 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 		m.AddAge(v)
 		return nil
 	case user.FieldIsDeleted:
-		v, ok := value.(int)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2089,8 +2089,8 @@ type UserAddressMutation struct {
 	updated_by    *uuid.UUID
 	deleted_at    *time.Time
 	deleted_by    *uuid.UUID
-	is_deleted    *int
-	addis_deleted *int
+	is_deleted    *int64
+	addis_deleted *int64
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*UserAddress, error)
@@ -2542,13 +2542,13 @@ func (m *UserAddressMutation) ResetDeletedBy() {
 }
 
 // SetIsDeleted sets the "is_deleted" field.
-func (m *UserAddressMutation) SetIsDeleted(i int) {
+func (m *UserAddressMutation) SetIsDeleted(i int64) {
 	m.is_deleted = &i
 	m.addis_deleted = nil
 }
 
 // IsDeleted returns the value of the "is_deleted" field in the mutation.
-func (m *UserAddressMutation) IsDeleted() (r int, exists bool) {
+func (m *UserAddressMutation) IsDeleted() (r int64, exists bool) {
 	v := m.is_deleted
 	if v == nil {
 		return
@@ -2559,7 +2559,7 @@ func (m *UserAddressMutation) IsDeleted() (r int, exists bool) {
 // OldIsDeleted returns the old "is_deleted" field's value of the UserAddress entity.
 // If the UserAddress object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserAddressMutation) OldIsDeleted(ctx context.Context) (v int, err error) {
+func (m *UserAddressMutation) OldIsDeleted(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldIsDeleted is only allowed on UpdateOne operations")
 	}
@@ -2574,7 +2574,7 @@ func (m *UserAddressMutation) OldIsDeleted(ctx context.Context) (v int, err erro
 }
 
 // AddIsDeleted adds i to the "is_deleted" field.
-func (m *UserAddressMutation) AddIsDeleted(i int) {
+func (m *UserAddressMutation) AddIsDeleted(i int64) {
 	if m.addis_deleted != nil {
 		*m.addis_deleted += i
 	} else {
@@ -2583,7 +2583,7 @@ func (m *UserAddressMutation) AddIsDeleted(i int) {
 }
 
 // AddedIsDeleted returns the value that was added to the "is_deleted" field in this mutation.
-func (m *UserAddressMutation) AddedIsDeleted() (r int, exists bool) {
+func (m *UserAddressMutation) AddedIsDeleted() (r int64, exists bool) {
 	v := m.addis_deleted
 	if v == nil {
 		return
@@ -2778,7 +2778,7 @@ func (m *UserAddressMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedBy(v)
 		return nil
 	case useraddress.FieldIsDeleted:
-		v, ok := value.(int)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2815,7 +2815,7 @@ func (m *UserAddressMutation) AddedField(name string) (ent.Value, bool) {
 func (m *UserAddressMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	case useraddress.FieldIsDeleted:
-		v, ok := value.(int)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

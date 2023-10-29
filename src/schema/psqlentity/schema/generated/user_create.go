@@ -130,13 +130,13 @@ func (uc *UserCreate) SetNillableDeletedBy(u *uuid.UUID) *UserCreate {
 }
 
 // SetIsDeleted sets the "is_deleted" field.
-func (uc *UserCreate) SetIsDeleted(i int) *UserCreate {
+func (uc *UserCreate) SetIsDeleted(i int64) *UserCreate {
 	uc.mutation.SetIsDeleted(i)
 	return uc
 }
 
 // SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
-func (uc *UserCreate) SetNillableIsDeleted(i *int) *UserCreate {
+func (uc *UserCreate) SetNillableIsDeleted(i *int64) *UserCreate {
 	if i != nil {
 		uc.SetIsDeleted(*i)
 	}
@@ -346,7 +346,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_node.DeletedBy = value
 	}
 	if value, ok := uc.mutation.IsDeleted(); ok {
-		_spec.SetField(user.FieldIsDeleted, field.TypeInt, value)
+		_spec.SetField(user.FieldIsDeleted, field.TypeInt64, value)
 		_node.IsDeleted = value
 	}
 	return _node, _spec

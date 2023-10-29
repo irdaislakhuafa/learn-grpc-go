@@ -8,6 +8,6 @@ option go_package = "generated/pb";
 message Pagination {
   uint64 total_data = 1;
   uint64 current_page = 2;
-  uint64 per_page = 3;
+  uint64 limit = 3;
   uint64 total_pages = 4;
 }

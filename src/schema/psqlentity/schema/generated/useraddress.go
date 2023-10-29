@@ -35,7 +35,7 @@ type UserAddress struct {
 	// DeletedBy holds the value of the "deleted_by" field.
 	DeletedBy uuid.UUID `json:"deleted_by,omitempty"`
 	// IsDeleted holds the value of the "is_deleted" field.
-	IsDeleted    int `json:"is_deleted,omitempty"`
+	IsDeleted    int64 `json:"is_deleted,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -123,7 +123,7 @@ func (ua *UserAddress) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field is_deleted", values[i])
 			} else if value.Valid {
-				ua.IsDeleted = int(value.Int64)
+				ua.IsDeleted = value.Int64
 			}
 		default:
 			ua.selectValues.Set(columns[i], values[i])

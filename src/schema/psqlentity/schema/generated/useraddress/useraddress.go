@@ -74,9 +74,9 @@ var (
 	// DefaultDeletedBy holds the default value on creation for the "deleted_by" field.
 	DefaultDeletedBy func() uuid.UUID
 	// DefaultIsDeleted holds the default value on creation for the "is_deleted" field.
-	DefaultIsDeleted int
+	DefaultIsDeleted int64
 	// IsDeletedValidator is a validator for the "is_deleted" field. It is called by the builders before save.
-	IsDeletedValidator func(int) error
+	IsDeletedValidator func(int64) error
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

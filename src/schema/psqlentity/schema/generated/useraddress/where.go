@@ -96,7 +96,7 @@ func DeletedBy(v uuid.UUID) predicate.UserAddress {
 }
 
 // IsDeleted applies equality check predicate on the "is_deleted" field. It's identical to IsDeletedEQ.
-func IsDeleted(v int) predicate.UserAddress {
+func IsDeleted(v int64) predicate.UserAddress {
 	return predicate.UserAddress(sql.FieldEQ(FieldIsDeleted, v))
 }
 
@@ -461,42 +461,42 @@ func DeletedByNotNil() predicate.UserAddress {
 }
 
 // IsDeletedEQ applies the EQ predicate on the "is_deleted" field.
-func IsDeletedEQ(v int) predicate.UserAddress {
+func IsDeletedEQ(v int64) predicate.UserAddress {
 	return predicate.UserAddress(sql.FieldEQ(FieldIsDeleted, v))
 }
 
 // IsDeletedNEQ applies the NEQ predicate on the "is_deleted" field.
-func IsDeletedNEQ(v int) predicate.UserAddress {
+func IsDeletedNEQ(v int64) predicate.UserAddress {
 	return predicate.UserAddress(sql.FieldNEQ(FieldIsDeleted, v))
 }
 
 // IsDeletedIn applies the In predicate on the "is_deleted" field.
-func IsDeletedIn(vs ...int) predicate.UserAddress {
+func IsDeletedIn(vs ...int64) predicate.UserAddress {
 	return predicate.UserAddress(sql.FieldIn(FieldIsDeleted, vs...))
 }
 
 // IsDeletedNotIn applies the NotIn predicate on the "is_deleted" field.
-func IsDeletedNotIn(vs ...int) predicate.UserAddress {
+func IsDeletedNotIn(vs ...int64) predicate.UserAddress {
 	return predicate.UserAddress(sql.FieldNotIn(FieldIsDeleted, vs...))
 }
 
 // IsDeletedGT applies the GT predicate on the "is_deleted" field.
-func IsDeletedGT(v int) predicate.UserAddress {
+func IsDeletedGT(v int64) predicate.UserAddress {
 	return predicate.UserAddress(sql.FieldGT(FieldIsDeleted, v))
 }
 
 // IsDeletedGTE applies the GTE predicate on the "is_deleted" field.
-func IsDeletedGTE(v int) predicate.UserAddress {
+func IsDeletedGTE(v int64) predicate.UserAddress {
 	return predicate.UserAddress(sql.FieldGTE(FieldIsDeleted, v))
 }
 
 // IsDeletedLT applies the LT predicate on the "is_deleted" field.
-func IsDeletedLT(v int) predicate.UserAddress {
+func IsDeletedLT(v int64) predicate.UserAddress {
 	return predicate.UserAddress(sql.FieldLT(FieldIsDeleted, v))
 }
 
 // IsDeletedLTE applies the LTE predicate on the "is_deleted" field.
-func IsDeletedLTE(v int) predicate.UserAddress {
+func IsDeletedLTE(v int64) predicate.UserAddress {
 	return predicate.UserAddress(sql.FieldLTE(FieldIsDeleted, v))
 }
 

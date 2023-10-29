@@ -21,7 +21,7 @@ var (
 		{Name: "updated_by", Type: field.TypeUUID, Unique: true, Nullable: true},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "deleted_by", Type: field.TypeUUID, Unique: true, Nullable: true},
-		{Name: "is_deleted", Type: field.TypeInt, Default: 0},
+		{Name: "is_deleted", Type: field.TypeInt64, Default: 0},
 	}
 	// AddressesTable holds the schema information for the "addresses" table.
 	AddressesTable = &schema.Table{
@@ -42,7 +42,7 @@ var (
 		{Name: "updated_by", Type: field.TypeUUID, Unique: true, Nullable: true},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "deleted_by", Type: field.TypeUUID, Unique: true, Nullable: true},
-		{Name: "is_deleted", Type: field.TypeInt, Default: 0},
+		{Name: "is_deleted", Type: field.TypeInt64, Default: 0},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -61,7 +61,7 @@ var (
 		{Name: "updated_by", Type: field.TypeUUID, Unique: true, Nullable: true},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "deleted_by", Type: field.TypeUUID, Unique: true, Nullable: true},
-		{Name: "is_deleted", Type: field.TypeInt, Default: 0},
+		{Name: "is_deleted", Type: field.TypeInt64, Default: 0},
 	}
 	// UserAddressesTable holds the schema information for the "user_addresses" table.
 	UserAddressesTable = &schema.Table{

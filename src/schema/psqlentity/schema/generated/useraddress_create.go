@@ -118,13 +118,13 @@ func (uac *UserAddressCreate) SetNillableDeletedBy(u *uuid.UUID) *UserAddressCre
 }
 
 // SetIsDeleted sets the "is_deleted" field.
-func (uac *UserAddressCreate) SetIsDeleted(i int) *UserAddressCreate {
+func (uac *UserAddressCreate) SetIsDeleted(i int64) *UserAddressCreate {
 	uac.mutation.SetIsDeleted(i)
 	return uac
 }
 
 // SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
-func (uac *UserAddressCreate) SetNillableIsDeleted(i *int) *UserAddressCreate {
+func (uac *UserAddressCreate) SetNillableIsDeleted(i *int64) *UserAddressCreate {
 	if i != nil {
 		uac.SetIsDeleted(*i)
 	}
@@ -304,7 +304,7 @@ func (uac *UserAddressCreate) createSpec() (*UserAddress, *sqlgraph.CreateSpec) 
 		_node.DeletedBy = value
 	}
 	if value, ok := uac.mutation.IsDeleted(); ok {
-		_spec.SetField(useraddress.FieldIsDeleted, field.TypeInt, value)
+		_spec.SetField(useraddress.FieldIsDeleted, field.TypeInt64, value)
 		_node.IsDeleted = value
 	}
 	return _node, _spec

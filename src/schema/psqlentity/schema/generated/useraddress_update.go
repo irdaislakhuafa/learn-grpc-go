@@ -150,14 +150,14 @@ func (uau *UserAddressUpdate) ClearDeletedBy() *UserAddressUpdate {
 }
 
 // SetIsDeleted sets the "is_deleted" field.
-func (uau *UserAddressUpdate) SetIsDeleted(i int) *UserAddressUpdate {
+func (uau *UserAddressUpdate) SetIsDeleted(i int64) *UserAddressUpdate {
 	uau.mutation.ResetIsDeleted()
 	uau.mutation.SetIsDeleted(i)
 	return uau
 }
 
 // SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
-func (uau *UserAddressUpdate) SetNillableIsDeleted(i *int) *UserAddressUpdate {
+func (uau *UserAddressUpdate) SetNillableIsDeleted(i *int64) *UserAddressUpdate {
 	if i != nil {
 		uau.SetIsDeleted(*i)
 	}
@@ -165,7 +165,7 @@ func (uau *UserAddressUpdate) SetNillableIsDeleted(i *int) *UserAddressUpdate {
 }
 
 // AddIsDeleted adds i to the "is_deleted" field.
-func (uau *UserAddressUpdate) AddIsDeleted(i int) *UserAddressUpdate {
+func (uau *UserAddressUpdate) AddIsDeleted(i int64) *UserAddressUpdate {
 	uau.mutation.AddIsDeleted(i)
 	return uau
 }
@@ -261,10 +261,10 @@ func (uau *UserAddressUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.ClearField(useraddress.FieldDeletedBy, field.TypeUUID)
 	}
 	if value, ok := uau.mutation.IsDeleted(); ok {
-		_spec.SetField(useraddress.FieldIsDeleted, field.TypeInt, value)
+		_spec.SetField(useraddress.FieldIsDeleted, field.TypeInt64, value)
 	}
 	if value, ok := uau.mutation.AddedIsDeleted(); ok {
-		_spec.AddField(useraddress.FieldIsDeleted, field.TypeInt, value)
+		_spec.AddField(useraddress.FieldIsDeleted, field.TypeInt64, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uau.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -407,14 +407,14 @@ func (uauo *UserAddressUpdateOne) ClearDeletedBy() *UserAddressUpdateOne {
 }
 
 // SetIsDeleted sets the "is_deleted" field.
-func (uauo *UserAddressUpdateOne) SetIsDeleted(i int) *UserAddressUpdateOne {
+func (uauo *UserAddressUpdateOne) SetIsDeleted(i int64) *UserAddressUpdateOne {
 	uauo.mutation.ResetIsDeleted()
 	uauo.mutation.SetIsDeleted(i)
 	return uauo
 }
 
 // SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
-func (uauo *UserAddressUpdateOne) SetNillableIsDeleted(i *int) *UserAddressUpdateOne {
+func (uauo *UserAddressUpdateOne) SetNillableIsDeleted(i *int64) *UserAddressUpdateOne {
 	if i != nil {
 		uauo.SetIsDeleted(*i)
 	}
@@ -422,7 +422,7 @@ func (uauo *UserAddressUpdateOne) SetNillableIsDeleted(i *int) *UserAddressUpdat
 }
 
 // AddIsDeleted adds i to the "is_deleted" field.
-func (uauo *UserAddressUpdateOne) AddIsDeleted(i int) *UserAddressUpdateOne {
+func (uauo *UserAddressUpdateOne) AddIsDeleted(i int64) *UserAddressUpdateOne {
 	uauo.mutation.AddIsDeleted(i)
 	return uauo
 }
@@ -548,10 +548,10 @@ func (uauo *UserAddressUpdateOne) sqlSave(ctx context.Context) (_node *UserAddre
 		_spec.ClearField(useraddress.FieldDeletedBy, field.TypeUUID)
 	}
 	if value, ok := uauo.mutation.IsDeleted(); ok {
-		_spec.SetField(useraddress.FieldIsDeleted, field.TypeInt, value)
+		_spec.SetField(useraddress.FieldIsDeleted, field.TypeInt64, value)
 	}
 	if value, ok := uauo.mutation.AddedIsDeleted(); ok {
-		_spec.AddField(useraddress.FieldIsDeleted, field.TypeInt, value)
+		_spec.AddField(useraddress.FieldIsDeleted, field.TypeInt64, value)
 	}
 	_node = &UserAddress{config: uauo.config}
 	_spec.Assign = _node.assignValues
