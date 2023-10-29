@@ -36,6 +36,7 @@ func (self *user) GetListWithPagination(ctx context.Context, params params.UserP
 		offset = (params.Page - 1) * params.Limit
 	}
 
+	// get list user from db
 	listUser, err := self.psql.User.Query().
 		Limit(int(params.Limit)).
 		Where(psqlUser.IsDeleted(params.IsDeleted)).
@@ -45,6 +46,7 @@ func (self *user) GetListWithPagination(ctx context.Context, params params.UserP
 		return nil, err
 	}
 
+	// count total data user
 	totalUser, err := self.psql.User.Query().Count(ctx)
 	if err != nil {
 		return nil, err

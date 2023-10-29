@@ -231,11 +231,6 @@ func (uac *UserAddressCreate) check() error {
 	if _, ok := uac.mutation.IsDeleted(); !ok {
 		return &ValidationError{Name: "is_deleted", err: errors.New(`generated: missing required field "UserAddress.is_deleted"`)}
 	}
-	if v, ok := uac.mutation.IsDeleted(); ok {
-		if err := useraddress.IsDeletedValidator(v); err != nil {
-			return &ValidationError{Name: "is_deleted", err: fmt.Errorf(`generated: validator failed for field "UserAddress.is_deleted": %w`, err)}
-		}
-	}
 	return nil
 }
 

@@ -236,11 +236,6 @@ func (au *AddressUpdate) check() error {
 			return &ValidationError{Name: "sub_district", err: fmt.Errorf(`generated: validator failed for field "Address.sub_district": %w`, err)}
 		}
 	}
-	if v, ok := au.mutation.IsDeleted(); ok {
-		if err := address.IsDeletedValidator(v); err != nil {
-			return &ValidationError{Name: "is_deleted", err: fmt.Errorf(`generated: validator failed for field "Address.is_deleted": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -542,11 +537,6 @@ func (auo *AddressUpdateOne) check() error {
 	if v, ok := auo.mutation.SubDistrict(); ok {
 		if err := address.SubDistrictValidator(v); err != nil {
 			return &ValidationError{Name: "sub_district", err: fmt.Errorf(`generated: validator failed for field "Address.sub_district": %w`, err)}
-		}
-	}
-	if v, ok := auo.mutation.IsDeleted(); ok {
-		if err := address.IsDeletedValidator(v); err != nil {
-			return &ValidationError{Name: "is_deleted", err: fmt.Errorf(`generated: validator failed for field "Address.is_deleted": %w`, err)}
 		}
 	}
 	return nil

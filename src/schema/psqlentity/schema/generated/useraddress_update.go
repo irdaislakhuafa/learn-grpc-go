@@ -202,20 +202,7 @@ func (uau *UserAddressUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (uau *UserAddressUpdate) check() error {
-	if v, ok := uau.mutation.IsDeleted(); ok {
-		if err := useraddress.IsDeletedValidator(v); err != nil {
-			return &ValidationError{Name: "is_deleted", err: fmt.Errorf(`generated: validator failed for field "UserAddress.is_deleted": %w`, err)}
-		}
-	}
-	return nil
-}
-
 func (uau *UserAddressUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := uau.check(); err != nil {
-		return n, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(useraddress.Table, useraddress.Columns, sqlgraph.NewFieldSpec(useraddress.FieldID, field.TypeUUID))
 	if ps := uau.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -472,20 +459,7 @@ func (uauo *UserAddressUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (uauo *UserAddressUpdateOne) check() error {
-	if v, ok := uauo.mutation.IsDeleted(); ok {
-		if err := useraddress.IsDeletedValidator(v); err != nil {
-			return &ValidationError{Name: "is_deleted", err: fmt.Errorf(`generated: validator failed for field "UserAddress.is_deleted": %w`, err)}
-		}
-	}
-	return nil
-}
-
 func (uauo *UserAddressUpdateOne) sqlSave(ctx context.Context) (_node *UserAddress, err error) {
-	if err := uauo.check(); err != nil {
-		return _node, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(useraddress.Table, useraddress.Columns, sqlgraph.NewFieldSpec(useraddress.FieldID, field.TypeUUID))
 	id, ok := uauo.mutation.ID()
 	if !ok {

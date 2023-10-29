@@ -62,8 +62,6 @@ func init() {
 	addressDescIsDeleted := addressFields[11].Descriptor()
 	// address.DefaultIsDeleted holds the default value on creation for the is_deleted field.
 	address.DefaultIsDeleted = addressDescIsDeleted.Default.(int64)
-	// address.IsDeletedValidator is a validator for the "is_deleted" field. It is called by the builders before save.
-	address.IsDeletedValidator = addressDescIsDeleted.Validators[0].(func(int64) error)
 	// addressDescID is the schema descriptor for id field.
 	addressDescID := addressFields[4].Descriptor()
 	// address.DefaultID holds the default value on creation for the id field.
@@ -114,8 +112,6 @@ func init() {
 	userDescIsDeleted := userFields[11].Descriptor()
 	// user.DefaultIsDeleted holds the default value on creation for the is_deleted field.
 	user.DefaultIsDeleted = userDescIsDeleted.Default.(int64)
-	// user.IsDeletedValidator is a validator for the "is_deleted" field. It is called by the builders before save.
-	user.IsDeletedValidator = userDescIsDeleted.Validators[0].(func(int64) error)
 	// userDescID is the schema descriptor for id field.
 	userDescID := userFields[4].Descriptor()
 	// user.DefaultID holds the default value on creation for the id field.
@@ -150,8 +146,6 @@ func init() {
 	useraddressDescIsDeleted := useraddressFields[9].Descriptor()
 	// useraddress.DefaultIsDeleted holds the default value on creation for the is_deleted field.
 	useraddress.DefaultIsDeleted = useraddressDescIsDeleted.Default.(int64)
-	// useraddress.IsDeletedValidator is a validator for the "is_deleted" field. It is called by the builders before save.
-	useraddress.IsDeletedValidator = useraddressDescIsDeleted.Validators[0].(func(int64) error)
 	// useraddressDescID is the schema descriptor for id field.
 	useraddressDescID := useraddressFields[2].Descriptor()
 	// useraddress.DefaultID holds the default value on creation for the id field.

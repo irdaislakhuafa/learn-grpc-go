@@ -251,11 +251,6 @@ func (uu *UserUpdate) check() error {
 			return &ValidationError{Name: "age", err: fmt.Errorf(`generated: validator failed for field "User.age": %w`, err)}
 		}
 	}
-	if v, ok := uu.mutation.IsDeleted(); ok {
-		if err := user.IsDeletedValidator(v); err != nil {
-			return &ValidationError{Name: "is_deleted", err: fmt.Errorf(`generated: validator failed for field "User.is_deleted": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -582,11 +577,6 @@ func (uuo *UserUpdateOne) check() error {
 	if v, ok := uuo.mutation.Age(); ok {
 		if err := user.AgeValidator(v); err != nil {
 			return &ValidationError{Name: "age", err: fmt.Errorf(`generated: validator failed for field "User.age": %w`, err)}
-		}
-	}
-	if v, ok := uuo.mutation.IsDeleted(); ok {
-		if err := user.IsDeletedValidator(v); err != nil {
-			return &ValidationError{Name: "is_deleted", err: fmt.Errorf(`generated: validator failed for field "User.is_deleted": %w`, err)}
 		}
 	}
 	return nil

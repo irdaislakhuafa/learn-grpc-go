@@ -17,7 +17,7 @@ func GetBaseFields() []ent.Field {
 		field.UUID("updated_by", uuid.UUID{}).Unique().Default(uuid.New).Optional(),
 		field.Time("deleted_at").Default(time.Now).Optional(),
 		field.UUID("deleted_by", uuid.UUID{}).Unique().Default(uuid.New).Optional(),
-		field.Int64("is_deleted").Default(0).Positive(),
+		field.Int64("is_deleted").Default(0),
 	}
 	return fields
 }

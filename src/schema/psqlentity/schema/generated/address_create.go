@@ -269,11 +269,6 @@ func (ac *AddressCreate) check() error {
 	if _, ok := ac.mutation.IsDeleted(); !ok {
 		return &ValidationError{Name: "is_deleted", err: errors.New(`generated: missing required field "Address.is_deleted"`)}
 	}
-	if v, ok := ac.mutation.IsDeleted(); ok {
-		if err := address.IsDeletedValidator(v); err != nil {
-			return &ValidationError{Name: "is_deleted", err: fmt.Errorf(`generated: validator failed for field "Address.is_deleted": %w`, err)}
-		}
-	}
 	return nil
 }
 
