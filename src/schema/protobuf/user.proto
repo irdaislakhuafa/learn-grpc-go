@@ -60,13 +60,14 @@ message User {
   // determine field for message in protobuf with format {data type} {field name} = {unique id and this is dynamic up to you}
   string id = 1;
   string name = 2;
-  uint64 age = 3;
+  string email = 3;
+  uint64 age = 4;
 
   // use keyword `repeated` to define array/slice
-  repeated string hobbies = 4;
+  repeated string hobbies = 5;
 
   // use custom/object datatype for address user
-  repeated Address address = 5;
+  repeated Address address = 6;
 
   // use embeded protobuf message inside protobuf message
   message Overview {
