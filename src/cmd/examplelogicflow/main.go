@@ -16,7 +16,7 @@ func main() {
 		Pagination: &pb.Pagination{
 			TotalData:   2,
 			CurrentPage: 1,
-			PerPage:     1,
+			Limit:       1,
 			TotalPages:  2,
 		},
 		Data: []*pb.User{
