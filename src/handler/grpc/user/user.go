@@ -21,7 +21,7 @@ func Init(user user.Interface) pb.UserServiceServer {
 }
 
 func (self *userService) GetUsers(ctx context.Context, request *pb.UserPaginationRequest) (*pb.UserResponsePagination, error) {
-	args, err := converter.FromUserPaginationParam(request)
+	args, err := converter.ToUserPaginationParam(request)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func (self *userService) GetUsers(ctx context.Context, request *pb.UserPaginatio
 
 	}
 
-	response, err := converter.ToUserResponsePagination(*result)
+	response, err := converter.ToUserResponsePaginationProto(*result)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,22 @@ func (self *userService) GetUsers(ctx context.Context, request *pb.UserPaginatio
 }
 
 func (self *userService) GetUser(ctx context.Context, request *pb.GetUserRequest) (*pb.User, error) {
-	panic("not implemented") // TODO: Implement
+	args, err := converter.ToUserGetParam(request)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := self.user.Get(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := converter.ToUserProto(*result)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
 
 func (self *userService) CreateUser(ctx context.Context, request *pb.CreateUserRequest) (*pb.User, error) {

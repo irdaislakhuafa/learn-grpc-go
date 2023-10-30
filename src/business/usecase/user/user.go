@@ -6,16 +6,17 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/entity"
-	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/params"
+	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/parameter"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated"
-	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/address"
+	psqlAddress "github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/address"
 	psqlUser "github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/user"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/utils/config"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/utils/operator"
 )
 
 type Interface interface {
-	GetListWithPagination(ctx context.Context, params params.UserPaginationParam) (*entity.ResponsePagination[entity.Pagination, []entity.User], error)
+	GetListWithPagination(ctx context.Context, params parameter.UserPaginationParam) (*entity.ResponsePagination[entity.Pagination, []entity.User], error)
+	Get(ctx context.Context, params parameter.UserGetParam) (*entity.User, error)
 }
 
 type user struct {
@@ -31,7 +32,7 @@ func Init(psql *generated.Client, cfg config.Config) Interface {
 	return &result
 }
 
-func (self *user) GetListWithPagination(ctx context.Context, params params.UserPaginationParam) (*entity.ResponsePagination[entity.Pagination, []entity.User], error) {
+func (self *user) GetListWithPagination(ctx context.Context, params parameter.UserPaginationParam) (*entity.ResponsePagination[entity.Pagination, []entity.User], error) {
 	// handle pagination offset
 	offset := uint64(0)
 	if params.Page <= 1 {
@@ -61,7 +62,7 @@ func (self *user) GetListWithPagination(ctx context.Context, params params.UserP
 		listUserID = append(listUserID, v.ID)
 	}
 
-	listAddress, err := self.psql.Address.Query().Where(address.UserIDIn(listUserID...)).All(ctx)
+	listAddress, err := self.psql.Address.Query().Where(psqlAddress.UserIDIn(listUserID...)).All(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -126,4 +127,61 @@ func (self *user) GetListWithPagination(ctx context.Context, params params.UserP
 	}
 
 	return result, nil
+}
+
+func (self *user) Get(ctx context.Context, params parameter.UserGetParam) (*entity.User, error) {
+	// parse id from parameter
+	id, err := uuid.Parse(params.ID)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("id is not UUID"))
+	}
+
+	// get user by parsed id
+	user, err := self.psql.User.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	// find address of user
+	address, err := self.psql.Address.Query().Where(psqlAddress.UserID(user.ID)).First(ctx)
+	if err != nil {
+		if !generated.IsNotFound(err) {
+			return nil, err
+		} else {
+			address = new(generated.Address)
+		}
+
+	}
+
+	result := entity.User{
+		ID:        user.ID,
+		Name:      user.Name,
+		Email:     user.Email,
+		Age:       user.Age,
+		Hobbies:   user.Hobbies,
+		CreatedAt: user.CreatedAt,
+		CreatedBy: user.CreatedBy,
+		UpdatedAt: user.UpdatedAt,
+		UpdatedBy: user.UpdatedBy,
+		DeletedAt: user.DeletedAt,
+		DeletedBy: user.DeletedBy,
+		Address: entity.Address{
+			ID:          address.ID,
+			Country:     address.Country,
+			Province:    address.Province,
+			Regency:     address.Regency,
+			SubDistrict: address.SubDistrict,
+			UserID:      address.UserID,
+			CreatedAt:   address.CreatedAt,
+			CreatedBy:   address.CreatedBy,
+			UpdatedAt:   address.UpdatedAt,
+			UpdatedBy:   address.UpdatedBy,
+			DeletedAt:   address.DeletedAt,
+			DeletedBy:   address.DeletedBy,
+			IsDeleted:   address.IsDeleted,
+		},
+		IsDeleted: address.IsDeleted,
+	}
+
+	return &result, nil
 }
