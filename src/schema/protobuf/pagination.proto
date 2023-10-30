@@ -11,3 +11,10 @@ message Pagination {
   uint64 limit = 3;
   uint64 total_pages = 4;
 }
+
+// as request pagination
+message PaginationRequest {
+  uint64 limit = 1;
+  uint64 page = 2;
+  uint64 is_deleted = 3;
+}

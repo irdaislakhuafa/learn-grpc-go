@@ -8,7 +8,7 @@ import "pagination.proto";
 option go_package = "generated/pb";
 
 service RoleService {
-  rpc GetRoles(RolePaginationRequest) returns (RoleResponsePagination);
+  rpc GetRoles(PaginationRequest) returns (RoleResponsePagination);
   rpc GetRole(Empty) returns (Role);
   rpc CreateRole(CreateRoleRequest) returns (Role);
   rpc UpdateRole(UpdateRoleRequest) returns (Role);
@@ -24,12 +24,6 @@ message Role {
 message RoleResponsePagination {
   Pagination pagination = 1;
   repeated Role data = 2;
-}
-
-message RolePaginationRequest {
-  uint64 limit = 1;
-  uint64 page = 2;
-  uint64 is_deleted = 3;
 }
 
 message CreateRoleRequest {
