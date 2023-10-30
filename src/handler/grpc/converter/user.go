@@ -95,3 +95,10 @@ func ToUserUpdateParam(v *pb.UpdateUserRequest) (parameter.UserUpdateParam, erro
 	}
 	return result, nil
 }
+
+func ToUserDeleteParam(v *pb.DeleteUserRequest) (parameter.UserDeleteParam, error) {
+	result := parameter.UserDeleteParam{
+		ID: v.Id,
+	}
+	return result, nil
+}

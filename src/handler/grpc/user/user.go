@@ -98,5 +98,20 @@ func (self *userService) UpdateUser(ctx context.Context, request *pb.UpdateUserR
 }
 
 func (self *userService) DeleteUser(ctx context.Context, request *pb.DeleteUserRequest) (*pb.User, error) {
-	panic("not implemented") // TODO: Implement
+	args, err := converter.ToUserDeleteParam(request)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := self.user.Delete(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := converter.ToUserProto(*result)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
