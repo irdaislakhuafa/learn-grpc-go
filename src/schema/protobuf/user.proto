@@ -39,11 +39,12 @@ message CreateUserRequest {
 
 // for request update user
 message UpdateUserRequest {
-  string name = 1;
-  string email = 2;
-  uint64 age = 3;
-  repeated string hobbies = 4;
-  Address address = 5;
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  uint64 age = 4;
+  repeated string hobbies = 5;
+  Address address = 6;
   message Overview {
     string intro = 1;
   }

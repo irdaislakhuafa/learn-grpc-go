@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
@@ -10,6 +11,7 @@ import (
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/protobuf/generated/pb"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/utils/config"
 	goGRPC "google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 type GRPC struct {
@@ -28,7 +30,14 @@ func InitAndRun(uc usecase.Usecase, cfg config.Config) GRPC {
 		log.Fatalf("failed to listen GRPC server at port %v, %v", result.cfg.Service.GRPC.Port, err)
 	}
 
-	server := goGRPC.NewServer()
+	server := goGRPC.NewServer(
+		// TODO: added jwt authentication
+		goGRPC.UnaryInterceptor(func(ctx context.Context, req any, _ *goGRPC.UnaryServerInfo, handler goGRPC.UnaryHandler) (resp any, err error) {
+			m, _ := metadata.FromIncomingContext(ctx)
+			fmt.Printf("authorization: %v\n", m.Get("authorization"))
+			return handler(ctx, req)
+		}),
+	)
 
 	result.register(server)
 

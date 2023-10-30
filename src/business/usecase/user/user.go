@@ -273,7 +273,7 @@ func (self *user) Update(ctx context.Context, params parameter.UserUpdateParam) 
 		return nil, errors.Join(err, errors.New(fmt.Sprintf("id is not uuid")))
 	}
 
-	user, err := tx.User.UpdateOneID(id).
+	err = tx.User.UpdateOneID(id).
 		SetName(params.Name).
 		SetEmail(params.Email).
 		SetAge(params.Age).
@@ -282,9 +282,14 @@ func (self *user) Update(ctx context.Context, params parameter.UserUpdateParam) 
 
 		// TODO: set authentication for GRPC
 		SetUpdatedBy(uuid.New()).
-		Save(ctx)
+		Exec(ctx)
 	if err != nil {
 		return nil, errors.Join(err, errors.New("cannot update user"))
+	}
+
+	user, err := tx.User.Get(ctx, id)
+	if err != nil {
+		return nil, err
 	}
 
 	err = tx.Address.Update().

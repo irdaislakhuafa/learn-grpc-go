@@ -77,3 +77,21 @@ func ToUserCreateParam(v *pb.CreateUserRequest) (parameter.UserCreateParam, erro
 	}
 	return result, nil
 }
+
+func ToUserUpdateParam(v *pb.UpdateUserRequest) (parameter.UserUpdateParam, error) {
+	result := parameter.UserUpdateParam{
+		ID:      v.GetId(),
+		Name:    v.GetEmail(),
+		Email:   v.GetEmail(),
+		Age:     int(v.GetAge()),
+		Hobbies: v.GetHobbies(),
+		Address: parameter.AddressUpdateParam{
+			ID:          v.Address.GetId(),
+			Country:     v.Address.GetCountry(),
+			Province:    v.Address.GetProvince(),
+			Regency:     v.Address.GetRegency(),
+			SubDistrict: v.Address.GetSubDistrict(),
+		},
+	}
+	return result, nil
+}
