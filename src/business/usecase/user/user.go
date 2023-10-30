@@ -22,6 +22,7 @@ type Interface interface {
 	Get(ctx context.Context, params parameter.UserGetParam) (*entity.User, error)
 	Create(ctx context.Context, params parameter.UserCreateParam) (*entity.User, error)
 	Update(ctx context.Context, params parameter.UserUpdateParam) (*entity.User, error)
+	Delete(ctx context.Context, params parameter.UserDeleteParam) (*entity.User, error)
 }
 
 type user struct {
@@ -346,5 +347,75 @@ func (self *user) Update(ctx context.Context, params parameter.UserUpdateParam) 
 		IsDeleted: address.IsDeleted,
 	}
 
+	return &result, nil
+}
+
+func (self *user) Delete(ctx context.Context, params parameter.UserDeleteParam) (*entity.User, error) {
+	tx, err := self.psql.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	id, err := uuid.Parse(params.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := tx.User.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.IsDeleted == 1 {
+		return nil, errors.New("user is already deleted")
+	}
+
+	if err := tx.User.UpdateOneID(id).SetIsDeleted(1).Exec(ctx); err != nil {
+		return nil, errors.Join(err, errors.New("cannot delete user"))
+	}
+
+	address, err := tx.Address.Query().Where(psqlAddress.UserID(user.ID)).First(ctx)
+	if err != nil {
+		if !generated.IsNotFound(err) {
+			return nil, err
+		} else {
+			address = new(generated.Address)
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	result := entity.User{
+		ID:        user.ID,
+		Name:      user.Name,
+		Email:     user.Email,
+		Age:       user.Age,
+		Hobbies:   user.Hobbies,
+		CreatedAt: user.CreatedAt,
+		CreatedBy: user.CreatedBy,
+		UpdatedAt: user.UpdatedAt,
+		UpdatedBy: user.UpdatedBy,
+		DeletedAt: user.DeletedAt,
+		DeletedBy: user.DeletedBy,
+		Address: entity.Address{
+			ID:          address.ID,
+			Country:     address.Country,
+			Province:    address.Province,
+			Regency:     address.Regency,
+			SubDistrict: address.SubDistrict,
+			UserID:      user.ID,
+			CreatedAt:   address.CreatedAt,
+			CreatedBy:   address.CreatedBy,
+			UpdatedAt:   address.UpdatedAt,
+			UpdatedBy:   address.UpdatedBy,
+			DeletedAt:   address.DeletedAt,
+			DeletedBy:   address.DeletedBy,
+			IsDeleted:   address.IsDeleted,
+		},
+		IsDeleted: user.IsDeleted,
+	}
 	return &result, nil
 }

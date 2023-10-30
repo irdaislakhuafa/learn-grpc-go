@@ -26,3 +26,7 @@ type UserUpdateParam struct {
 	Hobbies []string           `json:"hobbies,omitempty"`
 	Address AddressUpdateParam `json:"address,omitempty"`
 }
+
+type UserDeleteParam struct {
+	ID string `json:"id,omitempty"`
+}
