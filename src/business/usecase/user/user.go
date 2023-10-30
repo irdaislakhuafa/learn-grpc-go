@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -20,6 +21,7 @@ type Interface interface {
 	GetListWithPagination(ctx context.Context, params parameter.UserPaginationParam) (*entity.ResponsePagination[entity.Pagination, []entity.User], error)
 	Get(ctx context.Context, params parameter.UserGetParam) (*entity.User, error)
 	Create(ctx context.Context, params parameter.UserCreateParam) (*entity.User, error)
+	Update(ctx context.Context, params parameter.UserUpdateParam) (*entity.User, error)
 }
 
 type user struct {
@@ -254,6 +256,89 @@ func (self *user) Create(ctx context.Context, params parameter.UserCreateParam) 
 			IsDeleted:   address.IsDeleted,
 		},
 		IsDeleted: user.IsDeleted,
+	}
+
+	return &result, nil
+}
+
+func (self *user) Update(ctx context.Context, params parameter.UserUpdateParam) (*entity.User, error) {
+	tx, err := self.psql.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	id, err := uuid.Parse(params.ID)
+	if err != nil {
+		return nil, errors.Join(err, errors.New(fmt.Sprintf("id is not uuid")))
+	}
+
+	user, err := tx.User.UpdateOneID(id).
+		SetName(params.Name).
+		SetEmail(params.Email).
+		SetAge(params.Age).
+		SetHobbies(params.Hobbies).
+		SetUpdatedAt(time.Now()).
+
+		// TODO: set authentication for GRPC
+		SetUpdatedBy(uuid.New()).
+		Save(ctx)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("cannot update user"))
+	}
+
+	err = tx.Address.Update().
+		SetCountry(params.Address.Country).
+		SetRegency(params.Address.Regency).
+		SetSubDistrict(params.Address.SubDistrict).
+		SetProvince(params.Address.Province).
+		SetUpdatedAt(time.Now()).
+
+		// TODO: set authentication for GRPC
+		SetUpdatedBy(uuid.New()).
+		Where(psqlAddress.UserID(user.ID)).
+		Exec(ctx)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("cannot update address of user"))
+	}
+
+	address, err := tx.Address.Query().Where(psqlAddress.UserID(user.ID)).First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	result := entity.User{
+		ID:        user.ID,
+		Name:      user.Name,
+		Email:     user.Email,
+		Age:       user.Age,
+		Hobbies:   user.Hobbies,
+		CreatedAt: user.CreatedAt,
+		CreatedBy: user.CreatedBy,
+		UpdatedAt: user.UpdatedAt,
+		UpdatedBy: user.UpdatedBy,
+		DeletedAt: user.DeletedAt,
+		DeletedBy: user.DeletedBy,
+		Address: entity.Address{
+			ID:          address.ID,
+			Country:     address.Country,
+			Province:    address.Province,
+			Regency:     address.Regency,
+			SubDistrict: address.SubDistrict,
+			UserID:      address.UserID,
+			CreatedAt:   address.CreatedAt,
+			CreatedBy:   address.CreatedBy,
+			UpdatedAt:   address.UpdatedAt,
+			UpdatedBy:   address.UpdatedBy,
+			DeletedAt:   address.DeletedAt,
+			DeletedBy:   address.DeletedBy,
+			IsDeleted:   address.IsDeleted,
+		},
+		IsDeleted: address.IsDeleted,
 	}
 
 	return &result, nil
