@@ -213,6 +213,7 @@ func (self *user) Create(ctx context.Context, params parameter.UserCreateParam) 
 	address, err := tx.Address.Create().
 		SetCountry(params.Address.Country).
 		SetRegency(params.Address.Regency).
+		SetProvince(params.Address.Province).
 		SetSubDistrict(params.Address.SubDistrict).
 		SetUserID(user.ID).
 

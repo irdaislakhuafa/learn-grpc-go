@@ -61,3 +61,19 @@ func ToUserProto(v entity.User) (*pb.User, error) {
 	}
 	return result, nil
 }
+
+func ToUserCreateParam(v *pb.CreateUserRequest) (parameter.UserCreateParam, error) {
+	result := parameter.UserCreateParam{
+		Name:    v.Name,
+		Email:   v.Email,
+		Age:     int(v.Age),
+		Hobbies: v.Hobbies,
+		Address: parameter.AddressCreateParam{
+			Country:     v.Address.Country,
+			Province:    v.Address.Province,
+			Regency:     v.Address.Regency,
+			SubDistrict: v.Address.SubDistrict,
+		},
+	}
+	return result, nil
+}

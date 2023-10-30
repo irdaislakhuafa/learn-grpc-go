@@ -31,7 +31,7 @@ message CreateUserRequest {
   string email = 2;
   uint64 age = 3;
   repeated string hobbies = 4;
-  Address address = 5;
+  AddressCreateRequest address = 5;
   message Overview {
     string intro = 1;
   }

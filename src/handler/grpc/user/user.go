@@ -60,7 +60,22 @@ func (self *userService) GetUser(ctx context.Context, request *pb.GetUserRequest
 }
 
 func (self *userService) CreateUser(ctx context.Context, request *pb.CreateUserRequest) (*pb.User, error) {
-	panic("not implemented") // TODO: Implement
+	args, err := converter.ToUserCreateParam(request)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := self.user.Create(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := converter.ToUserProto(*result)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
 
 func (self *userService) UpdateUser(ctx context.Context, request *pb.UpdateUserRequest) (*pb.User, error) {
