@@ -2,6 +2,7 @@ package role
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 
 	"github.com/google/uuid"
@@ -17,9 +18,9 @@ import (
 type Interface interface {
 	GetListWithPagination(ctx context.Context, params parameter.PaginationParam) (*entity.ResponsePagination[entity.Pagination, []entity.Role], error)
 	Get(ctx context.Context, params parameter.RoleGetParam) (*entity.Role, error)
-	Create(ctx context.Context, params parameter.RoleCreateParam) (*entity.User, error)
-	Update(ctx context.Context, params parameter.RoleUpdateParam) (*entity.User, error)
-	Delete(ctx context.Context, params parameter.RoleDeleteParam) (*entity.User, error)
+	Create(ctx context.Context, params parameter.RoleCreateParam) (*entity.Role, error)
+	Update(ctx context.Context, params parameter.RoleUpdateParam) (*entity.Role, error)
+	Delete(ctx context.Context, params parameter.RoleDeleteParam) (*entity.Role, error)
 }
 
 type role struct {
@@ -113,14 +114,48 @@ func (self *role) Get(ctx context.Context, params parameter.RoleGetParam) (*enti
 	return &result, nil
 }
 
-func (self *role) Create(ctx context.Context, params parameter.RoleCreateParam) (*entity.User, error) {
+func (self *role) Create(ctx context.Context, params parameter.RoleCreateParam) (*entity.Role, error) {
+	tx, err := self.psql.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	role, err := tx.Role.Create().
+		SetName(params.Name).
+		SetDescription(params.Description).
+
+		// TODO: set authentication for GRPC
+		SetCreatedBy(uuid.New()).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	result := entity.Role{
+		ID:          role.ID,
+		Name:        role.Name,
+		Description: role.Description,
+		CreatedAt:   role.CreatedAt,
+		CreatedBy:   role.CreatedBy,
+		UpdatedAt:   role.UpdatedAt,
+		UpdatedBy:   role.UpdatedBy,
+		DeletedAt:   role.DeletedAt,
+		DeletedBy:   role.DeletedBy,
+		IsDeleted:   role.IsDeleted,
+	}
+
+	return &result, nil
+}
+
+func (self *role) Update(ctx context.Context, params parameter.RoleUpdateParam) (*entity.Role, error) {
 	panic("not implemented") // TODO: Implement
 }
 
-func (self *role) Update(ctx context.Context, params parameter.RoleUpdateParam) (*entity.User, error) {
-	panic("not implemented") // TODO: Implement
-}
-
-func (self *role) Delete(ctx context.Context, params parameter.RoleDeleteParam) (*entity.User, error) {
+func (self *role) Delete(ctx context.Context, params parameter.RoleDeleteParam) (*entity.Role, error) {
 	panic("not implemented") // TODO: Implement
 }
