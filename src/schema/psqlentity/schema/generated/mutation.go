@@ -15,7 +15,6 @@ import (
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/address"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/predicate"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/user"
-	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/useraddress"
 )
 
 const (
@@ -27,9 +26,8 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeAddress     = "Address"
-	TypeUser        = "User"
-	TypeUserAddress = "UserAddress"
+	TypeAddress = "Address"
+	TypeUser    = "User"
 )
 
 // AddressMutation represents an operation that mutates the Address nodes in the graph.
@@ -42,6 +40,7 @@ type AddressMutation struct {
 	province      *string
 	regency       *string
 	sub_district  *string
+	user_id       *uuid.UUID
 	created_at    *time.Time
 	created_by    *uuid.UUID
 	updated_at    *time.Time
@@ -302,6 +301,42 @@ func (m *AddressMutation) OldSubDistrict(ctx context.Context) (v string, err err
 // ResetSubDistrict resets all changes to the "sub_district" field.
 func (m *AddressMutation) ResetSubDistrict() {
 	m.sub_district = nil
+}
+
+// SetUserID sets the "user_id" field.
+func (m *AddressMutation) SetUserID(u uuid.UUID) {
+	m.user_id = &u
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *AddressMutation) UserID() (r uuid.UUID, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the Address entity.
+// If the Address object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AddressMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *AddressMutation) ResetUserID() {
+	m.user_id = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -662,7 +697,7 @@ func (m *AddressMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AddressMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.country != nil {
 		fields = append(fields, address.FieldCountry)
 	}
@@ -674,6 +709,9 @@ func (m *AddressMutation) Fields() []string {
 	}
 	if m.sub_district != nil {
 		fields = append(fields, address.FieldSubDistrict)
+	}
+	if m.user_id != nil {
+		fields = append(fields, address.FieldUserID)
 	}
 	if m.created_at != nil {
 		fields = append(fields, address.FieldCreatedAt)
@@ -712,6 +750,8 @@ func (m *AddressMutation) Field(name string) (ent.Value, bool) {
 		return m.Regency()
 	case address.FieldSubDistrict:
 		return m.SubDistrict()
+	case address.FieldUserID:
+		return m.UserID()
 	case address.FieldCreatedAt:
 		return m.CreatedAt()
 	case address.FieldCreatedBy:
@@ -743,6 +783,8 @@ func (m *AddressMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldRegency(ctx)
 	case address.FieldSubDistrict:
 		return m.OldSubDistrict(ctx)
+	case address.FieldUserID:
+		return m.OldUserID(ctx)
 	case address.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case address.FieldCreatedBy:
@@ -793,6 +835,13 @@ func (m *AddressMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSubDistrict(v)
+		return nil
+	case address.FieldUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
 		return nil
 	case address.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -945,6 +994,9 @@ func (m *AddressMutation) ResetField(name string) error {
 		return nil
 	case address.FieldSubDistrict:
 		m.ResetSubDistrict()
+		return nil
+	case address.FieldUserID:
+		m.ResetUserID()
 		return nil
 	case address.FieldCreatedAt:
 		m.ResetCreatedAt()
@@ -2073,883 +2125,4 @@ func (m *UserMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *UserMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown User edge %s", name)
-}
-
-// UserAddressMutation represents an operation that mutates the UserAddress nodes in the graph.
-type UserAddressMutation struct {
-	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	user_id       *uuid.UUID
-	address_id    *uuid.UUID
-	created_at    *time.Time
-	created_by    *uuid.UUID
-	updated_at    *time.Time
-	updated_by    *uuid.UUID
-	deleted_at    *time.Time
-	deleted_by    *uuid.UUID
-	is_deleted    *int64
-	addis_deleted *int64
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*UserAddress, error)
-	predicates    []predicate.UserAddress
-}
-
-var _ ent.Mutation = (*UserAddressMutation)(nil)
-
-// useraddressOption allows management of the mutation configuration using functional options.
-type useraddressOption func(*UserAddressMutation)
-
-// newUserAddressMutation creates new mutation for the UserAddress entity.
-func newUserAddressMutation(c config, op Op, opts ...useraddressOption) *UserAddressMutation {
-	m := &UserAddressMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeUserAddress,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withUserAddressID sets the ID field of the mutation.
-func withUserAddressID(id uuid.UUID) useraddressOption {
-	return func(m *UserAddressMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *UserAddress
-		)
-		m.oldValue = func(ctx context.Context) (*UserAddress, error) {
-			once.Do(func() {
-				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().UserAddress.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withUserAddress sets the old UserAddress of the mutation.
-func withUserAddress(node *UserAddress) useraddressOption {
-	return func(m *UserAddressMutation) {
-		m.oldValue = func(context.Context) (*UserAddress, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m UserAddressMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m UserAddressMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("generated: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of UserAddress entities.
-func (m *UserAddressMutation) SetID(id uuid.UUID) {
-	m.id = &id
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *UserAddressMutation) ID() (id uuid.UUID, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// IDs queries the database and returns the entity ids that match the mutation's predicate.
-// That means, if the mutation is applied within a transaction with an isolation level such
-// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
-// or updated by the mutation.
-func (m *UserAddressMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	switch {
-	case m.op.Is(OpUpdateOne | OpDeleteOne):
-		id, exists := m.ID()
-		if exists {
-			return []uuid.UUID{id}, nil
-		}
-		fallthrough
-	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().UserAddress.Query().Where(m.predicates...).IDs(ctx)
-	default:
-		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
-	}
-}
-
-// SetUserID sets the "user_id" field.
-func (m *UserAddressMutation) SetUserID(u uuid.UUID) {
-	m.user_id = &u
-}
-
-// UserID returns the value of the "user_id" field in the mutation.
-func (m *UserAddressMutation) UserID() (r uuid.UUID, exists bool) {
-	v := m.user_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUserID returns the old "user_id" field's value of the UserAddress entity.
-// If the UserAddress object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserAddressMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUserID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
-	}
-	return oldValue.UserID, nil
-}
-
-// ResetUserID resets all changes to the "user_id" field.
-func (m *UserAddressMutation) ResetUserID() {
-	m.user_id = nil
-}
-
-// SetAddressID sets the "address_id" field.
-func (m *UserAddressMutation) SetAddressID(u uuid.UUID) {
-	m.address_id = &u
-}
-
-// AddressID returns the value of the "address_id" field in the mutation.
-func (m *UserAddressMutation) AddressID() (r uuid.UUID, exists bool) {
-	v := m.address_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldAddressID returns the old "address_id" field's value of the UserAddress entity.
-// If the UserAddress object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserAddressMutation) OldAddressID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAddressID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAddressID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAddressID: %w", err)
-	}
-	return oldValue.AddressID, nil
-}
-
-// ResetAddressID resets all changes to the "address_id" field.
-func (m *UserAddressMutation) ResetAddressID() {
-	m.address_id = nil
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (m *UserAddressMutation) SetCreatedAt(t time.Time) {
-	m.created_at = &t
-}
-
-// CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *UserAddressMutation) CreatedAt() (r time.Time, exists bool) {
-	v := m.created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreatedAt returns the old "created_at" field's value of the UserAddress entity.
-// If the UserAddress object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserAddressMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
-	}
-	return oldValue.CreatedAt, nil
-}
-
-// ResetCreatedAt resets all changes to the "created_at" field.
-func (m *UserAddressMutation) ResetCreatedAt() {
-	m.created_at = nil
-}
-
-// SetCreatedBy sets the "created_by" field.
-func (m *UserAddressMutation) SetCreatedBy(u uuid.UUID) {
-	m.created_by = &u
-}
-
-// CreatedBy returns the value of the "created_by" field in the mutation.
-func (m *UserAddressMutation) CreatedBy() (r uuid.UUID, exists bool) {
-	v := m.created_by
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreatedBy returns the old "created_by" field's value of the UserAddress entity.
-// If the UserAddress object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserAddressMutation) OldCreatedBy(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
-	}
-	return oldValue.CreatedBy, nil
-}
-
-// ResetCreatedBy resets all changes to the "created_by" field.
-func (m *UserAddressMutation) ResetCreatedBy() {
-	m.created_by = nil
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (m *UserAddressMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
-}
-
-// UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *UserAddressMutation) UpdatedAt() (r time.Time, exists bool) {
-	v := m.updated_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedAt returns the old "updated_at" field's value of the UserAddress entity.
-// If the UserAddress object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserAddressMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
-	}
-	return oldValue.UpdatedAt, nil
-}
-
-// ClearUpdatedAt clears the value of the "updated_at" field.
-func (m *UserAddressMutation) ClearUpdatedAt() {
-	m.updated_at = nil
-	m.clearedFields[useraddress.FieldUpdatedAt] = struct{}{}
-}
-
-// UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
-func (m *UserAddressMutation) UpdatedAtCleared() bool {
-	_, ok := m.clearedFields[useraddress.FieldUpdatedAt]
-	return ok
-}
-
-// ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *UserAddressMutation) ResetUpdatedAt() {
-	m.updated_at = nil
-	delete(m.clearedFields, useraddress.FieldUpdatedAt)
-}
-
-// SetUpdatedBy sets the "updated_by" field.
-func (m *UserAddressMutation) SetUpdatedBy(u uuid.UUID) {
-	m.updated_by = &u
-}
-
-// UpdatedBy returns the value of the "updated_by" field in the mutation.
-func (m *UserAddressMutation) UpdatedBy() (r uuid.UUID, exists bool) {
-	v := m.updated_by
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedBy returns the old "updated_by" field's value of the UserAddress entity.
-// If the UserAddress object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserAddressMutation) OldUpdatedBy(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdatedBy requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedBy: %w", err)
-	}
-	return oldValue.UpdatedBy, nil
-}
-
-// ClearUpdatedBy clears the value of the "updated_by" field.
-func (m *UserAddressMutation) ClearUpdatedBy() {
-	m.updated_by = nil
-	m.clearedFields[useraddress.FieldUpdatedBy] = struct{}{}
-}
-
-// UpdatedByCleared returns if the "updated_by" field was cleared in this mutation.
-func (m *UserAddressMutation) UpdatedByCleared() bool {
-	_, ok := m.clearedFields[useraddress.FieldUpdatedBy]
-	return ok
-}
-
-// ResetUpdatedBy resets all changes to the "updated_by" field.
-func (m *UserAddressMutation) ResetUpdatedBy() {
-	m.updated_by = nil
-	delete(m.clearedFields, useraddress.FieldUpdatedBy)
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (m *UserAddressMutation) SetDeletedAt(t time.Time) {
-	m.deleted_at = &t
-}
-
-// DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *UserAddressMutation) DeletedAt() (r time.Time, exists bool) {
-	v := m.deleted_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeletedAt returns the old "deleted_at" field's value of the UserAddress entity.
-// If the UserAddress object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserAddressMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
-	}
-	return oldValue.DeletedAt, nil
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (m *UserAddressMutation) ClearDeletedAt() {
-	m.deleted_at = nil
-	m.clearedFields[useraddress.FieldDeletedAt] = struct{}{}
-}
-
-// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
-func (m *UserAddressMutation) DeletedAtCleared() bool {
-	_, ok := m.clearedFields[useraddress.FieldDeletedAt]
-	return ok
-}
-
-// ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *UserAddressMutation) ResetDeletedAt() {
-	m.deleted_at = nil
-	delete(m.clearedFields, useraddress.FieldDeletedAt)
-}
-
-// SetDeletedBy sets the "deleted_by" field.
-func (m *UserAddressMutation) SetDeletedBy(u uuid.UUID) {
-	m.deleted_by = &u
-}
-
-// DeletedBy returns the value of the "deleted_by" field in the mutation.
-func (m *UserAddressMutation) DeletedBy() (r uuid.UUID, exists bool) {
-	v := m.deleted_by
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeletedBy returns the old "deleted_by" field's value of the UserAddress entity.
-// If the UserAddress object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserAddressMutation) OldDeletedBy(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeletedBy is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeletedBy requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeletedBy: %w", err)
-	}
-	return oldValue.DeletedBy, nil
-}
-
-// ClearDeletedBy clears the value of the "deleted_by" field.
-func (m *UserAddressMutation) ClearDeletedBy() {
-	m.deleted_by = nil
-	m.clearedFields[useraddress.FieldDeletedBy] = struct{}{}
-}
-
-// DeletedByCleared returns if the "deleted_by" field was cleared in this mutation.
-func (m *UserAddressMutation) DeletedByCleared() bool {
-	_, ok := m.clearedFields[useraddress.FieldDeletedBy]
-	return ok
-}
-
-// ResetDeletedBy resets all changes to the "deleted_by" field.
-func (m *UserAddressMutation) ResetDeletedBy() {
-	m.deleted_by = nil
-	delete(m.clearedFields, useraddress.FieldDeletedBy)
-}
-
-// SetIsDeleted sets the "is_deleted" field.
-func (m *UserAddressMutation) SetIsDeleted(i int64) {
-	m.is_deleted = &i
-	m.addis_deleted = nil
-}
-
-// IsDeleted returns the value of the "is_deleted" field in the mutation.
-func (m *UserAddressMutation) IsDeleted() (r int64, exists bool) {
-	v := m.is_deleted
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldIsDeleted returns the old "is_deleted" field's value of the UserAddress entity.
-// If the UserAddress object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserAddressMutation) OldIsDeleted(ctx context.Context) (v int64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIsDeleted is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIsDeleted requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIsDeleted: %w", err)
-	}
-	return oldValue.IsDeleted, nil
-}
-
-// AddIsDeleted adds i to the "is_deleted" field.
-func (m *UserAddressMutation) AddIsDeleted(i int64) {
-	if m.addis_deleted != nil {
-		*m.addis_deleted += i
-	} else {
-		m.addis_deleted = &i
-	}
-}
-
-// AddedIsDeleted returns the value that was added to the "is_deleted" field in this mutation.
-func (m *UserAddressMutation) AddedIsDeleted() (r int64, exists bool) {
-	v := m.addis_deleted
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetIsDeleted resets all changes to the "is_deleted" field.
-func (m *UserAddressMutation) ResetIsDeleted() {
-	m.is_deleted = nil
-	m.addis_deleted = nil
-}
-
-// Where appends a list predicates to the UserAddressMutation builder.
-func (m *UserAddressMutation) Where(ps ...predicate.UserAddress) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// WhereP appends storage-level predicates to the UserAddressMutation builder. Using this method,
-// users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *UserAddressMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.UserAddress, len(ps))
-	for i := range ps {
-		p[i] = ps[i]
-	}
-	m.Where(p...)
-}
-
-// Op returns the operation name.
-func (m *UserAddressMutation) Op() Op {
-	return m.op
-}
-
-// SetOp allows setting the mutation operation.
-func (m *UserAddressMutation) SetOp(op Op) {
-	m.op = op
-}
-
-// Type returns the node type of this mutation (UserAddress).
-func (m *UserAddressMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *UserAddressMutation) Fields() []string {
-	fields := make([]string, 0, 9)
-	if m.user_id != nil {
-		fields = append(fields, useraddress.FieldUserID)
-	}
-	if m.address_id != nil {
-		fields = append(fields, useraddress.FieldAddressID)
-	}
-	if m.created_at != nil {
-		fields = append(fields, useraddress.FieldCreatedAt)
-	}
-	if m.created_by != nil {
-		fields = append(fields, useraddress.FieldCreatedBy)
-	}
-	if m.updated_at != nil {
-		fields = append(fields, useraddress.FieldUpdatedAt)
-	}
-	if m.updated_by != nil {
-		fields = append(fields, useraddress.FieldUpdatedBy)
-	}
-	if m.deleted_at != nil {
-		fields = append(fields, useraddress.FieldDeletedAt)
-	}
-	if m.deleted_by != nil {
-		fields = append(fields, useraddress.FieldDeletedBy)
-	}
-	if m.is_deleted != nil {
-		fields = append(fields, useraddress.FieldIsDeleted)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *UserAddressMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case useraddress.FieldUserID:
-		return m.UserID()
-	case useraddress.FieldAddressID:
-		return m.AddressID()
-	case useraddress.FieldCreatedAt:
-		return m.CreatedAt()
-	case useraddress.FieldCreatedBy:
-		return m.CreatedBy()
-	case useraddress.FieldUpdatedAt:
-		return m.UpdatedAt()
-	case useraddress.FieldUpdatedBy:
-		return m.UpdatedBy()
-	case useraddress.FieldDeletedAt:
-		return m.DeletedAt()
-	case useraddress.FieldDeletedBy:
-		return m.DeletedBy()
-	case useraddress.FieldIsDeleted:
-		return m.IsDeleted()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *UserAddressMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case useraddress.FieldUserID:
-		return m.OldUserID(ctx)
-	case useraddress.FieldAddressID:
-		return m.OldAddressID(ctx)
-	case useraddress.FieldCreatedAt:
-		return m.OldCreatedAt(ctx)
-	case useraddress.FieldCreatedBy:
-		return m.OldCreatedBy(ctx)
-	case useraddress.FieldUpdatedAt:
-		return m.OldUpdatedAt(ctx)
-	case useraddress.FieldUpdatedBy:
-		return m.OldUpdatedBy(ctx)
-	case useraddress.FieldDeletedAt:
-		return m.OldDeletedAt(ctx)
-	case useraddress.FieldDeletedBy:
-		return m.OldDeletedBy(ctx)
-	case useraddress.FieldIsDeleted:
-		return m.OldIsDeleted(ctx)
-	}
-	return nil, fmt.Errorf("unknown UserAddress field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *UserAddressMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case useraddress.FieldUserID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUserID(v)
-		return nil
-	case useraddress.FieldAddressID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetAddressID(v)
-		return nil
-	case useraddress.FieldCreatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreatedAt(v)
-		return nil
-	case useraddress.FieldCreatedBy:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreatedBy(v)
-		return nil
-	case useraddress.FieldUpdatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedAt(v)
-		return nil
-	case useraddress.FieldUpdatedBy:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedBy(v)
-		return nil
-	case useraddress.FieldDeletedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeletedAt(v)
-		return nil
-	case useraddress.FieldDeletedBy:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeletedBy(v)
-		return nil
-	case useraddress.FieldIsDeleted:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetIsDeleted(v)
-		return nil
-	}
-	return fmt.Errorf("unknown UserAddress field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *UserAddressMutation) AddedFields() []string {
-	var fields []string
-	if m.addis_deleted != nil {
-		fields = append(fields, useraddress.FieldIsDeleted)
-	}
-	return fields
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *UserAddressMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case useraddress.FieldIsDeleted:
-		return m.AddedIsDeleted()
-	}
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *UserAddressMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	case useraddress.FieldIsDeleted:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddIsDeleted(v)
-		return nil
-	}
-	return fmt.Errorf("unknown UserAddress numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *UserAddressMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(useraddress.FieldUpdatedAt) {
-		fields = append(fields, useraddress.FieldUpdatedAt)
-	}
-	if m.FieldCleared(useraddress.FieldUpdatedBy) {
-		fields = append(fields, useraddress.FieldUpdatedBy)
-	}
-	if m.FieldCleared(useraddress.FieldDeletedAt) {
-		fields = append(fields, useraddress.FieldDeletedAt)
-	}
-	if m.FieldCleared(useraddress.FieldDeletedBy) {
-		fields = append(fields, useraddress.FieldDeletedBy)
-	}
-	return fields
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *UserAddressMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *UserAddressMutation) ClearField(name string) error {
-	switch name {
-	case useraddress.FieldUpdatedAt:
-		m.ClearUpdatedAt()
-		return nil
-	case useraddress.FieldUpdatedBy:
-		m.ClearUpdatedBy()
-		return nil
-	case useraddress.FieldDeletedAt:
-		m.ClearDeletedAt()
-		return nil
-	case useraddress.FieldDeletedBy:
-		m.ClearDeletedBy()
-		return nil
-	}
-	return fmt.Errorf("unknown UserAddress nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *UserAddressMutation) ResetField(name string) error {
-	switch name {
-	case useraddress.FieldUserID:
-		m.ResetUserID()
-		return nil
-	case useraddress.FieldAddressID:
-		m.ResetAddressID()
-		return nil
-	case useraddress.FieldCreatedAt:
-		m.ResetCreatedAt()
-		return nil
-	case useraddress.FieldCreatedBy:
-		m.ResetCreatedBy()
-		return nil
-	case useraddress.FieldUpdatedAt:
-		m.ResetUpdatedAt()
-		return nil
-	case useraddress.FieldUpdatedBy:
-		m.ResetUpdatedBy()
-		return nil
-	case useraddress.FieldDeletedAt:
-		m.ResetDeletedAt()
-		return nil
-	case useraddress.FieldDeletedBy:
-		m.ResetDeletedBy()
-		return nil
-	case useraddress.FieldIsDeleted:
-		m.ResetIsDeleted()
-		return nil
-	}
-	return fmt.Errorf("unknown UserAddress field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *UserAddressMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *UserAddressMutation) AddedIDs(name string) []ent.Value {
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *UserAddressMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *UserAddressMutation) RemovedIDs(name string) []ent.Value {
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *UserAddressMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *UserAddressMutation) EdgeCleared(name string) bool {
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *UserAddressMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown UserAddress unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *UserAddressMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown UserAddress edge %s", name)
 }

@@ -1,4 +1,4 @@
-package responses
+package entity
 
 type ResponsePagination[P, D any] struct {
 	Pagination P `json:"pagination,omitempty"`

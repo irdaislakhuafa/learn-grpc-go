@@ -22,6 +22,8 @@ const (
 	FieldRegency = "regency"
 	// FieldSubDistrict holds the string denoting the sub_district field in the database.
 	FieldSubDistrict = "sub_district"
+	// FieldUserID holds the string denoting the user_id field in the database.
+	FieldUserID = "user_id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
@@ -47,6 +49,7 @@ var Columns = []string{
 	FieldProvince,
 	FieldRegency,
 	FieldSubDistrict,
+	FieldUserID,
 	FieldCreatedAt,
 	FieldCreatedBy,
 	FieldUpdatedAt,
@@ -119,6 +122,11 @@ func ByRegency(opts ...sql.OrderTermOption) OrderOption {
 // BySubDistrict orders the results by the sub_district field.
 func BySubDistrict(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSubDistrict, opts...).ToFunc()
+}
+
+// ByUserID orders the results by the user_id field.
+func ByUserID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUserID, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

@@ -31,7 +31,7 @@ message CreateUserRequest {
   string email = 2;
   uint64 age = 3;
   repeated string hobbies = 4;
-  repeated Address address = 5;
+  Address address = 5;
   message Overview {
     string intro = 1;
   }
@@ -43,7 +43,7 @@ message UpdateUserRequest {
   string email = 2;
   uint64 age = 3;
   repeated string hobbies = 4;
-  repeated Address address = 5;
+  Address address = 5;
   message Overview {
     string intro = 1;
   }
@@ -66,7 +66,7 @@ message User {
   repeated string hobbies = 5;
 
   // use custom/object datatype for address user
-  repeated Address address = 6;
+  Address address = 6;
 
   // use embeded protobuf message inside protobuf message
   message Overview {

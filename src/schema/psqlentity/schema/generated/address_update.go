@@ -53,6 +53,12 @@ func (au *AddressUpdate) SetSubDistrict(s string) *AddressUpdate {
 	return au
 }
 
+// SetUserID sets the "user_id" field.
+func (au *AddressUpdate) SetUserID(u uuid.UUID) *AddressUpdate {
+	au.mutation.SetUserID(u)
+	return au
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (au *AddressUpdate) SetCreatedAt(t time.Time) *AddressUpdate {
 	au.mutation.SetCreatedAt(t)
@@ -263,6 +269,9 @@ func (au *AddressUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := au.mutation.SubDistrict(); ok {
 		_spec.SetField(address.FieldSubDistrict, field.TypeString, value)
 	}
+	if value, ok := au.mutation.UserID(); ok {
+		_spec.SetField(address.FieldUserID, field.TypeUUID, value)
+	}
 	if value, ok := au.mutation.CreatedAt(); ok {
 		_spec.SetField(address.FieldCreatedAt, field.TypeTime, value)
 	}
@@ -340,6 +349,12 @@ func (auo *AddressUpdateOne) SetRegency(s string) *AddressUpdateOne {
 // SetSubDistrict sets the "sub_district" field.
 func (auo *AddressUpdateOne) SetSubDistrict(s string) *AddressUpdateOne {
 	auo.mutation.SetSubDistrict(s)
+	return auo
+}
+
+// SetUserID sets the "user_id" field.
+func (auo *AddressUpdateOne) SetUserID(u uuid.UUID) *AddressUpdateOne {
+	auo.mutation.SetUserID(u)
 	return auo
 }
 
@@ -582,6 +597,9 @@ func (auo *AddressUpdateOne) sqlSave(ctx context.Context) (_node *Address, err e
 	}
 	if value, ok := auo.mutation.SubDistrict(); ok {
 		_spec.SetField(address.FieldSubDistrict, field.TypeString, value)
+	}
+	if value, ok := auo.mutation.UserID(); ok {
+		_spec.SetField(address.FieldUserID, field.TypeUUID, value)
 	}
 	if value, ok := auo.mutation.CreatedAt(); ok {
 		_spec.SetField(address.FieldCreatedAt, field.TypeTime, value)

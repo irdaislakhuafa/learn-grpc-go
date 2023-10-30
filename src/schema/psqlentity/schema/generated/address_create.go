@@ -45,6 +45,12 @@ func (ac *AddressCreate) SetSubDistrict(s string) *AddressCreate {
 	return ac
 }
 
+// SetUserID sets the "user_id" field.
+func (ac *AddressCreate) SetUserID(u uuid.UUID) *AddressCreate {
+	ac.mutation.SetUserID(u)
+	return ac
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (ac *AddressCreate) SetCreatedAt(t time.Time) *AddressCreate {
 	ac.mutation.SetCreatedAt(t)
@@ -260,6 +266,9 @@ func (ac *AddressCreate) check() error {
 			return &ValidationError{Name: "sub_district", err: fmt.Errorf(`generated: validator failed for field "Address.sub_district": %w`, err)}
 		}
 	}
+	if _, ok := ac.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user_id", err: errors.New(`generated: missing required field "Address.user_id"`)}
+	}
 	if _, ok := ac.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`generated: missing required field "Address.created_at"`)}
 	}
@@ -319,6 +328,10 @@ func (ac *AddressCreate) createSpec() (*Address, *sqlgraph.CreateSpec) {
 	if value, ok := ac.mutation.SubDistrict(); ok {
 		_spec.SetField(address.FieldSubDistrict, field.TypeString, value)
 		_node.SubDistrict = value
+	}
+	if value, ok := ac.mutation.UserID(); ok {
+		_spec.SetField(address.FieldUserID, field.TypeUUID, value)
+		_node.UserID = value
 	}
 	if value, ok := ac.mutation.CreatedAt(); ok {
 		_spec.SetField(address.FieldCreatedAt, field.TypeTime, value)

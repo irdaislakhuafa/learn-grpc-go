@@ -25,14 +25,12 @@ func main() {
 				Name:    "irda islakhu afa",
 				Age:     21,
 				Hobbies: []string{"coding", "eat", "sleep"},
-				Address: []*pb.Address{
-					{
-						Id:          uuid.NewString(),
-						Country:     "indonesia",
-						Province:    "east java",
-						Regency:     "tuban",
-						SubDistrict: "montong",
-					},
+				Address: &pb.Address{
+					Id:          uuid.NewString(),
+					Country:     "indonesia",
+					Province:    "east java",
+					Regency:     "tuban",
+					SubDistrict: "montong",
 				},
 			},
 			{
@@ -40,14 +38,12 @@ func main() {
 				Name:    "someone",
 				Age:     23,
 				Hobbies: []string{"read", "fishing"},
-				Address: []*pb.Address{
-					{
-						Id:          uuid.NewString(),
-						Country:     "indonesia",
-						Province:    "east java",
-						Regency:     "tuban",
-						SubDistrict: "montong",
-					},
+				Address: &pb.Address{
+					Id:          uuid.NewString(),
+					Country:     "indonesia",
+					Province:    "east java",
+					Regency:     "tuban",
+					SubDistrict: "montong",
 				},
 			},
 		},

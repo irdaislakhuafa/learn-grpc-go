@@ -13,5 +13,10 @@
 			"Password": "postgres",
 			"SSL": false
 		}
+	},
+	"Service": {
+		"GRPC": {
+			"Port": 50051
+		}
 	}
 }

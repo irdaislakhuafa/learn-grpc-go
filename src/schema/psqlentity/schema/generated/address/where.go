@@ -75,6 +75,11 @@ func SubDistrict(v string) predicate.Address {
 	return predicate.Address(sql.FieldEQ(FieldSubDistrict, v))
 }
 
+// UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
+func UserID(v uuid.UUID) predicate.Address {
+	return predicate.Address(sql.FieldEQ(FieldUserID, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Address {
 	return predicate.Address(sql.FieldEQ(FieldCreatedAt, v))
@@ -368,6 +373,46 @@ func SubDistrictEqualFold(v string) predicate.Address {
 // SubDistrictContainsFold applies the ContainsFold predicate on the "sub_district" field.
 func SubDistrictContainsFold(v string) predicate.Address {
 	return predicate.Address(sql.FieldContainsFold(FieldSubDistrict, v))
+}
+
+// UserIDEQ applies the EQ predicate on the "user_id" field.
+func UserIDEQ(v uuid.UUID) predicate.Address {
+	return predicate.Address(sql.FieldEQ(FieldUserID, v))
+}
+
+// UserIDNEQ applies the NEQ predicate on the "user_id" field.
+func UserIDNEQ(v uuid.UUID) predicate.Address {
+	return predicate.Address(sql.FieldNEQ(FieldUserID, v))
+}
+
+// UserIDIn applies the In predicate on the "user_id" field.
+func UserIDIn(vs ...uuid.UUID) predicate.Address {
+	return predicate.Address(sql.FieldIn(FieldUserID, vs...))
+}
+
+// UserIDNotIn applies the NotIn predicate on the "user_id" field.
+func UserIDNotIn(vs ...uuid.UUID) predicate.Address {
+	return predicate.Address(sql.FieldNotIn(FieldUserID, vs...))
+}
+
+// UserIDGT applies the GT predicate on the "user_id" field.
+func UserIDGT(v uuid.UUID) predicate.Address {
+	return predicate.Address(sql.FieldGT(FieldUserID, v))
+}
+
+// UserIDGTE applies the GTE predicate on the "user_id" field.
+func UserIDGTE(v uuid.UUID) predicate.Address {
+	return predicate.Address(sql.FieldGTE(FieldUserID, v))
+}
+
+// UserIDLT applies the LT predicate on the "user_id" field.
+func UserIDLT(v uuid.UUID) predicate.Address {
+	return predicate.Address(sql.FieldLT(FieldUserID, v))
+}
+
+// UserIDLTE applies the LTE predicate on the "user_id" field.
+func UserIDLTE(v uuid.UUID) predicate.Address {
+	return predicate.Address(sql.FieldLTE(FieldUserID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
