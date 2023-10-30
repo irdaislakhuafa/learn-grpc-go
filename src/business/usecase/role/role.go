@@ -2,7 +2,9 @@ package role
 
 import (
 	"context"
+	"errors"
 
+	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/entity"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/parameter"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated"
@@ -34,7 +36,6 @@ func Init(psql *generated.Client, cfg config.Config) Interface {
 }
 
 func (self *role) GetListWithPagination(ctx context.Context, params parameter.PaginationParam) (*entity.ResponsePagination[entity.Pagination, []entity.Role], error) {
-	// handle pagination offset
 	params, offset, err := pagination.ParseFromParam(params)
 	if err != nil {
 		return nil, err
@@ -86,7 +87,30 @@ func (self *role) GetListWithPagination(ctx context.Context, params parameter.Pa
 }
 
 func (self *role) Get(ctx context.Context, params parameter.RoleGetParam) (*entity.Role, error) {
-	panic("not implemented") // TODO: Implement
+	id, err := uuid.Parse(params.ID)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("id is not uuid"))
+	}
+
+	role, err := self.psql.Role.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	result := entity.Role{
+		ID:          role.ID,
+		Name:        role.Name,
+		Description: role.Description,
+		CreatedAt:   role.CreatedAt,
+		CreatedBy:   role.CreatedBy,
+		UpdatedAt:   role.UpdatedAt,
+		UpdatedBy:   role.UpdatedBy,
+		DeletedAt:   role.DeletedAt,
+		DeletedBy:   role.DeletedBy,
+		IsDeleted:   role.IsDeleted,
+	}
+
+	return &result, nil
 }
 
 func (self *role) Create(ctx context.Context, params parameter.RoleCreateParam) (*entity.User, error) {
