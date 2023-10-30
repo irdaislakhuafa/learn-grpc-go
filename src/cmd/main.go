@@ -4,30 +4,31 @@ import (
 	"context"
 	"fmt"
 
-	"entgo.io/ent/dialect"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/business/usecase"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/connection"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/params"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/utils/config"
+	"github.com/irdaislakhuafa/learn-grpc-go/src/utils/flags"
+)
+
+const (
+	configPath = "etc/cfg"
+	configFile = "conf.json"
 )
 
 func main() {
 	ctx := context.Background()
-	cfg := config.Config{
-		Database: config.Database{
-			PSQL: config.SQL{
-				Driver:   dialect.Postgres,
-				Host:     "localhost",
-				Port:     5432,
-				DB:       "learn_grpc_go",
-				User:     "postgres",
-				Password: "postgres",
-				SSL:      false,
-			},
-		},
+	env, err := flags.ParseFlags(configPath, configFile)
+	if err != nil {
+		panic(err)
 	}
 
-	psql, err := connection.ConnectPSQL(cfg)
+	cfg, err := config.ReadConfigFromFile[config.Config](fmt.Sprintf("%s/%s/%s", configPath, *env, configFile))
+	if err != nil {
+		panic(err)
+	}
+
+	psql, err := connection.ConnectPSQL(*cfg)
 	if err != nil {
 		panic(err)
 	} else if err := psql.Schema.Create(ctx); err != nil {
@@ -35,7 +36,7 @@ func main() {
 	}
 
 	// init usecase
-	uc := usecase.Init(psql, cfg)
+	uc := usecase.Init(psql, *cfg)
 
 	rp, err := uc.User.GetListWithPagination(ctx, params.UserPaginationParam{Limit: 10, Page: 1, IsDeleted: 0})
 	if err != nil {
