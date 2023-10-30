@@ -26,6 +26,8 @@ type Address struct {
 	Regency string `json:"regency,omitempty"`
 	// SubDistrict holds the value of the "sub_district" field.
 	SubDistrict string `json:"sub_district,omitempty"`
+	// UserID holds the value of the "user_id" field.
+	UserID uuid.UUID `json:"user_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
@@ -39,7 +41,7 @@ type Address struct {
 	// DeletedBy holds the value of the "deleted_by" field.
 	DeletedBy uuid.UUID `json:"deleted_by,omitempty"`
 	// IsDeleted holds the value of the "is_deleted" field.
-	IsDeleted    int `json:"is_deleted,omitempty"`
+	IsDeleted    int64 `json:"is_deleted,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -54,7 +56,7 @@ func (*Address) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case address.FieldCreatedAt, address.FieldUpdatedAt, address.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case address.FieldID, address.FieldCreatedBy, address.FieldUpdatedBy, address.FieldDeletedBy:
+		case address.FieldID, address.FieldUserID, address.FieldCreatedBy, address.FieldUpdatedBy, address.FieldDeletedBy:
 			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -101,6 +103,12 @@ func (a *Address) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.SubDistrict = value.String
 			}
+		case address.FieldUserID:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+			} else if value != nil {
+				a.UserID = *value
+			}
 		case address.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -141,7 +149,7 @@ func (a *Address) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field is_deleted", values[i])
 			} else if value.Valid {
-				a.IsDeleted = int(value.Int64)
+				a.IsDeleted = value.Int64
 			}
 		default:
 			a.selectValues.Set(columns[i], values[i])
@@ -190,6 +198,9 @@ func (a *Address) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("sub_district=")
 	builder.WriteString(a.SubDistrict)
+	builder.WriteString(", ")
+	builder.WriteString("user_id=")
+	builder.WriteString(fmt.Sprintf("%v", a.UserID))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(a.CreatedAt.Format(time.ANSIC))

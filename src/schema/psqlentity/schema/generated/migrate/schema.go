@@ -15,13 +15,14 @@ var (
 		{Name: "province", Type: field.TypeString},
 		{Name: "regency", Type: field.TypeString},
 		{Name: "sub_district", Type: field.TypeString},
+		{Name: "user_id", Type: field.TypeUUID},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "created_by", Type: field.TypeUUID, Unique: true},
 		{Name: "updated_at", Type: field.TypeTime, Nullable: true},
 		{Name: "updated_by", Type: field.TypeUUID, Unique: true, Nullable: true},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "deleted_by", Type: field.TypeUUID, Unique: true, Nullable: true},
-		{Name: "is_deleted", Type: field.TypeInt, Default: 0},
+		{Name: "is_deleted", Type: field.TypeInt64, Default: 0},
 	}
 	// AddressesTable holds the schema information for the "addresses" table.
 	AddressesTable = &schema.Table{
@@ -42,7 +43,7 @@ var (
 		{Name: "updated_by", Type: field.TypeUUID, Unique: true, Nullable: true},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "deleted_by", Type: field.TypeUUID, Unique: true, Nullable: true},
-		{Name: "is_deleted", Type: field.TypeInt, Default: 0},
+		{Name: "is_deleted", Type: field.TypeInt64, Default: 0},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -50,30 +51,10 @@ var (
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
-	// UserAddressesColumns holds the columns for the "user_addresses" table.
-	UserAddressesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
-		{Name: "user_id", Type: field.TypeUUID},
-		{Name: "address_id", Type: field.TypeUUID},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "created_by", Type: field.TypeUUID, Unique: true},
-		{Name: "updated_at", Type: field.TypeTime, Nullable: true},
-		{Name: "updated_by", Type: field.TypeUUID, Unique: true, Nullable: true},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "deleted_by", Type: field.TypeUUID, Unique: true, Nullable: true},
-		{Name: "is_deleted", Type: field.TypeInt, Default: 0},
-	}
-	// UserAddressesTable holds the schema information for the "user_addresses" table.
-	UserAddressesTable = &schema.Table{
-		Name:       "user_addresses",
-		Columns:    UserAddressesColumns,
-		PrimaryKey: []*schema.Column{UserAddressesColumns[0]},
-	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AddressesTable,
 		UsersTable,
-		UserAddressesTable,
 	}
 )
 

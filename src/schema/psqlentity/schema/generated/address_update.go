@@ -53,6 +53,12 @@ func (au *AddressUpdate) SetSubDistrict(s string) *AddressUpdate {
 	return au
 }
 
+// SetUserID sets the "user_id" field.
+func (au *AddressUpdate) SetUserID(u uuid.UUID) *AddressUpdate {
+	au.mutation.SetUserID(u)
+	return au
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (au *AddressUpdate) SetCreatedAt(t time.Time) *AddressUpdate {
 	au.mutation.SetCreatedAt(t)
@@ -162,14 +168,14 @@ func (au *AddressUpdate) ClearDeletedBy() *AddressUpdate {
 }
 
 // SetIsDeleted sets the "is_deleted" field.
-func (au *AddressUpdate) SetIsDeleted(i int) *AddressUpdate {
+func (au *AddressUpdate) SetIsDeleted(i int64) *AddressUpdate {
 	au.mutation.ResetIsDeleted()
 	au.mutation.SetIsDeleted(i)
 	return au
 }
 
 // SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
-func (au *AddressUpdate) SetNillableIsDeleted(i *int) *AddressUpdate {
+func (au *AddressUpdate) SetNillableIsDeleted(i *int64) *AddressUpdate {
 	if i != nil {
 		au.SetIsDeleted(*i)
 	}
@@ -177,7 +183,7 @@ func (au *AddressUpdate) SetNillableIsDeleted(i *int) *AddressUpdate {
 }
 
 // AddIsDeleted adds i to the "is_deleted" field.
-func (au *AddressUpdate) AddIsDeleted(i int) *AddressUpdate {
+func (au *AddressUpdate) AddIsDeleted(i int64) *AddressUpdate {
 	au.mutation.AddIsDeleted(i)
 	return au
 }
@@ -236,11 +242,6 @@ func (au *AddressUpdate) check() error {
 			return &ValidationError{Name: "sub_district", err: fmt.Errorf(`generated: validator failed for field "Address.sub_district": %w`, err)}
 		}
 	}
-	if v, ok := au.mutation.IsDeleted(); ok {
-		if err := address.IsDeletedValidator(v); err != nil {
-			return &ValidationError{Name: "is_deleted", err: fmt.Errorf(`generated: validator failed for field "Address.is_deleted": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -267,6 +268,9 @@ func (au *AddressUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := au.mutation.SubDistrict(); ok {
 		_spec.SetField(address.FieldSubDistrict, field.TypeString, value)
+	}
+	if value, ok := au.mutation.UserID(); ok {
+		_spec.SetField(address.FieldUserID, field.TypeUUID, value)
 	}
 	if value, ok := au.mutation.CreatedAt(); ok {
 		_spec.SetField(address.FieldCreatedAt, field.TypeTime, value)
@@ -299,10 +303,10 @@ func (au *AddressUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.ClearField(address.FieldDeletedBy, field.TypeUUID)
 	}
 	if value, ok := au.mutation.IsDeleted(); ok {
-		_spec.SetField(address.FieldIsDeleted, field.TypeInt, value)
+		_spec.SetField(address.FieldIsDeleted, field.TypeInt64, value)
 	}
 	if value, ok := au.mutation.AddedIsDeleted(); ok {
-		_spec.AddField(address.FieldIsDeleted, field.TypeInt, value)
+		_spec.AddField(address.FieldIsDeleted, field.TypeInt64, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -345,6 +349,12 @@ func (auo *AddressUpdateOne) SetRegency(s string) *AddressUpdateOne {
 // SetSubDistrict sets the "sub_district" field.
 func (auo *AddressUpdateOne) SetSubDistrict(s string) *AddressUpdateOne {
 	auo.mutation.SetSubDistrict(s)
+	return auo
+}
+
+// SetUserID sets the "user_id" field.
+func (auo *AddressUpdateOne) SetUserID(u uuid.UUID) *AddressUpdateOne {
+	auo.mutation.SetUserID(u)
 	return auo
 }
 
@@ -457,14 +467,14 @@ func (auo *AddressUpdateOne) ClearDeletedBy() *AddressUpdateOne {
 }
 
 // SetIsDeleted sets the "is_deleted" field.
-func (auo *AddressUpdateOne) SetIsDeleted(i int) *AddressUpdateOne {
+func (auo *AddressUpdateOne) SetIsDeleted(i int64) *AddressUpdateOne {
 	auo.mutation.ResetIsDeleted()
 	auo.mutation.SetIsDeleted(i)
 	return auo
 }
 
 // SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
-func (auo *AddressUpdateOne) SetNillableIsDeleted(i *int) *AddressUpdateOne {
+func (auo *AddressUpdateOne) SetNillableIsDeleted(i *int64) *AddressUpdateOne {
 	if i != nil {
 		auo.SetIsDeleted(*i)
 	}
@@ -472,7 +482,7 @@ func (auo *AddressUpdateOne) SetNillableIsDeleted(i *int) *AddressUpdateOne {
 }
 
 // AddIsDeleted adds i to the "is_deleted" field.
-func (auo *AddressUpdateOne) AddIsDeleted(i int) *AddressUpdateOne {
+func (auo *AddressUpdateOne) AddIsDeleted(i int64) *AddressUpdateOne {
 	auo.mutation.AddIsDeleted(i)
 	return auo
 }
@@ -544,11 +554,6 @@ func (auo *AddressUpdateOne) check() error {
 			return &ValidationError{Name: "sub_district", err: fmt.Errorf(`generated: validator failed for field "Address.sub_district": %w`, err)}
 		}
 	}
-	if v, ok := auo.mutation.IsDeleted(); ok {
-		if err := address.IsDeletedValidator(v); err != nil {
-			return &ValidationError{Name: "is_deleted", err: fmt.Errorf(`generated: validator failed for field "Address.is_deleted": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -593,6 +598,9 @@ func (auo *AddressUpdateOne) sqlSave(ctx context.Context) (_node *Address, err e
 	if value, ok := auo.mutation.SubDistrict(); ok {
 		_spec.SetField(address.FieldSubDistrict, field.TypeString, value)
 	}
+	if value, ok := auo.mutation.UserID(); ok {
+		_spec.SetField(address.FieldUserID, field.TypeUUID, value)
+	}
 	if value, ok := auo.mutation.CreatedAt(); ok {
 		_spec.SetField(address.FieldCreatedAt, field.TypeTime, value)
 	}
@@ -624,10 +632,10 @@ func (auo *AddressUpdateOne) sqlSave(ctx context.Context) (_node *Address, err e
 		_spec.ClearField(address.FieldDeletedBy, field.TypeUUID)
 	}
 	if value, ok := auo.mutation.IsDeleted(); ok {
-		_spec.SetField(address.FieldIsDeleted, field.TypeInt, value)
+		_spec.SetField(address.FieldIsDeleted, field.TypeInt64, value)
 	}
 	if value, ok := auo.mutation.AddedIsDeleted(); ok {
-		_spec.AddField(address.FieldIsDeleted, field.TypeInt, value)
+		_spec.AddField(address.FieldIsDeleted, field.TypeInt64, value)
 	}
 	_node = &Address{config: auo.config}
 	_spec.Assign = _node.assignValues

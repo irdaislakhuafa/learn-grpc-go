@@ -13,3 +13,10 @@ message Address {
   string regency = 4;
   string sub_district = 5;
 }
+
+message AddressCreateRequest {
+  string country = 1;
+  string province = 2;
+  string regency = 3;
+  string sub_district = 4;
+}

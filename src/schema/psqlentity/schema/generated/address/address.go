@@ -22,6 +22,8 @@ const (
 	FieldRegency = "regency"
 	// FieldSubDistrict holds the string denoting the sub_district field in the database.
 	FieldSubDistrict = "sub_district"
+	// FieldUserID holds the string denoting the user_id field in the database.
+	FieldUserID = "user_id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
@@ -47,6 +49,7 @@ var Columns = []string{
 	FieldProvince,
 	FieldRegency,
 	FieldSubDistrict,
+	FieldUserID,
 	FieldCreatedAt,
 	FieldCreatedBy,
 	FieldUpdatedAt,
@@ -88,9 +91,7 @@ var (
 	// DefaultDeletedBy holds the default value on creation for the "deleted_by" field.
 	DefaultDeletedBy func() uuid.UUID
 	// DefaultIsDeleted holds the default value on creation for the "is_deleted" field.
-	DefaultIsDeleted int
-	// IsDeletedValidator is a validator for the "is_deleted" field. It is called by the builders before save.
-	IsDeletedValidator func(int) error
+	DefaultIsDeleted int64
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
@@ -121,6 +122,11 @@ func ByRegency(opts ...sql.OrderTermOption) OrderOption {
 // BySubDistrict orders the results by the sub_district field.
 func BySubDistrict(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSubDistrict, opts...).ToFunc()
+}
+
+// ByUserID orders the results by the user_id field.
+func ByUserID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUserID, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

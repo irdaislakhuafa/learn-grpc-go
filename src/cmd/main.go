@@ -2,33 +2,41 @@ package main
 
 import (
 	"context"
+	"fmt"
 
-	"entgo.io/ent/dialect"
+	"github.com/irdaislakhuafa/learn-grpc-go/src/business/usecase"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/connection"
+	"github.com/irdaislakhuafa/learn-grpc-go/src/handler/grpc"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/utils/config"
+	"github.com/irdaislakhuafa/learn-grpc-go/src/utils/flags"
+)
+
+const (
+	configPath = "etc/cfg"
+	configFile = "conf.json"
 )
 
 func main() {
 	ctx := context.Background()
-	cfg := config.Config{
-		Database: config.Database{
-			PSQL: config.SQL{
-				Driver:   dialect.Postgres,
-				Host:     "localhost",
-				Port:     5432,
-				DB:       "learn_grpc_go",
-				User:     "postgres",
-				Password: "postgres",
-				SSL:      false,
-			},
-		},
+	env, err := flags.ParseFlags(configPath, configFile)
+	if err != nil {
+		panic(err)
 	}
 
-	psql, err := connection.ConnectPSQL(cfg)
+	cfg, err := config.ReadConfigFromFile[config.Config](fmt.Sprintf("%s/%s/%s", configPath, *env, configFile))
+	if err != nil {
+		panic(err)
+	}
+
+	psql, err := connection.ConnectPSQL(*cfg)
 	if err != nil {
 		panic(err)
 	} else if err := psql.Schema.Create(ctx); err != nil {
 		panic(err)
 	}
 
+	// init usecase
+	uc := usecase.Init(psql, *cfg)
+
+	grpc.InitAndRun(uc, *cfg)
 }

@@ -11,6 +11,3 @@ type Address func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
-
-// UserAddress is the predicate function for useraddress builders.
-type UserAddress func(*sql.Selector)

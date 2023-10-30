@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/address"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/user"
-	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/useraddress"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -75,9 +74,8 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			address.Table:     address.ValidColumn,
-			user.Table:        user.ValidColumn,
-			useraddress.Table: useraddress.ValidColumn,
+			address.Table: address.ValidColumn,
+			user.Table:    user.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

@@ -45,6 +45,12 @@ func (ac *AddressCreate) SetSubDistrict(s string) *AddressCreate {
 	return ac
 }
 
+// SetUserID sets the "user_id" field.
+func (ac *AddressCreate) SetUserID(u uuid.UUID) *AddressCreate {
+	ac.mutation.SetUserID(u)
+	return ac
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (ac *AddressCreate) SetCreatedAt(t time.Time) *AddressCreate {
 	ac.mutation.SetCreatedAt(t)
@@ -130,13 +136,13 @@ func (ac *AddressCreate) SetNillableDeletedBy(u *uuid.UUID) *AddressCreate {
 }
 
 // SetIsDeleted sets the "is_deleted" field.
-func (ac *AddressCreate) SetIsDeleted(i int) *AddressCreate {
+func (ac *AddressCreate) SetIsDeleted(i int64) *AddressCreate {
 	ac.mutation.SetIsDeleted(i)
 	return ac
 }
 
 // SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
-func (ac *AddressCreate) SetNillableIsDeleted(i *int) *AddressCreate {
+func (ac *AddressCreate) SetNillableIsDeleted(i *int64) *AddressCreate {
 	if i != nil {
 		ac.SetIsDeleted(*i)
 	}
@@ -260,6 +266,9 @@ func (ac *AddressCreate) check() error {
 			return &ValidationError{Name: "sub_district", err: fmt.Errorf(`generated: validator failed for field "Address.sub_district": %w`, err)}
 		}
 	}
+	if _, ok := ac.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user_id", err: errors.New(`generated: missing required field "Address.user_id"`)}
+	}
 	if _, ok := ac.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`generated: missing required field "Address.created_at"`)}
 	}
@@ -268,11 +277,6 @@ func (ac *AddressCreate) check() error {
 	}
 	if _, ok := ac.mutation.IsDeleted(); !ok {
 		return &ValidationError{Name: "is_deleted", err: errors.New(`generated: missing required field "Address.is_deleted"`)}
-	}
-	if v, ok := ac.mutation.IsDeleted(); ok {
-		if err := address.IsDeletedValidator(v); err != nil {
-			return &ValidationError{Name: "is_deleted", err: fmt.Errorf(`generated: validator failed for field "Address.is_deleted": %w`, err)}
-		}
 	}
 	return nil
 }
@@ -325,6 +329,10 @@ func (ac *AddressCreate) createSpec() (*Address, *sqlgraph.CreateSpec) {
 		_spec.SetField(address.FieldSubDistrict, field.TypeString, value)
 		_node.SubDistrict = value
 	}
+	if value, ok := ac.mutation.UserID(); ok {
+		_spec.SetField(address.FieldUserID, field.TypeUUID, value)
+		_node.UserID = value
+	}
 	if value, ok := ac.mutation.CreatedAt(); ok {
 		_spec.SetField(address.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -350,7 +358,7 @@ func (ac *AddressCreate) createSpec() (*Address, *sqlgraph.CreateSpec) {
 		_node.DeletedBy = value
 	}
 	if value, ok := ac.mutation.IsDeleted(); ok {
-		_spec.SetField(address.FieldIsDeleted, field.TypeInt, value)
+		_spec.SetField(address.FieldIsDeleted, field.TypeInt64, value)
 		_node.IsDeleted = value
 	}
 	return _node, _spec

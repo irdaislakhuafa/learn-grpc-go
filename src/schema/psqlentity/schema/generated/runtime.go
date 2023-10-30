@@ -9,7 +9,6 @@ import (
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/address"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/user"
-	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/useraddress"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -35,37 +34,35 @@ func init() {
 	// address.SubDistrictValidator is a validator for the "sub_district" field. It is called by the builders before save.
 	address.SubDistrictValidator = addressDescSubDistrict.Validators[0].(func(string) error)
 	// addressDescCreatedAt is the schema descriptor for created_at field.
-	addressDescCreatedAt := addressFields[5].Descriptor()
+	addressDescCreatedAt := addressFields[6].Descriptor()
 	// address.DefaultCreatedAt holds the default value on creation for the created_at field.
 	address.DefaultCreatedAt = addressDescCreatedAt.Default.(func() time.Time)
 	// addressDescCreatedBy is the schema descriptor for created_by field.
-	addressDescCreatedBy := addressFields[6].Descriptor()
+	addressDescCreatedBy := addressFields[7].Descriptor()
 	// address.DefaultCreatedBy holds the default value on creation for the created_by field.
 	address.DefaultCreatedBy = addressDescCreatedBy.Default.(func() uuid.UUID)
 	// addressDescUpdatedAt is the schema descriptor for updated_at field.
-	addressDescUpdatedAt := addressFields[7].Descriptor()
+	addressDescUpdatedAt := addressFields[8].Descriptor()
 	// address.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	address.DefaultUpdatedAt = addressDescUpdatedAt.Default.(func() time.Time)
 	// addressDescUpdatedBy is the schema descriptor for updated_by field.
-	addressDescUpdatedBy := addressFields[8].Descriptor()
+	addressDescUpdatedBy := addressFields[9].Descriptor()
 	// address.DefaultUpdatedBy holds the default value on creation for the updated_by field.
 	address.DefaultUpdatedBy = addressDescUpdatedBy.Default.(func() uuid.UUID)
 	// addressDescDeletedAt is the schema descriptor for deleted_at field.
-	addressDescDeletedAt := addressFields[9].Descriptor()
+	addressDescDeletedAt := addressFields[10].Descriptor()
 	// address.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	address.DefaultDeletedAt = addressDescDeletedAt.Default.(func() time.Time)
 	// addressDescDeletedBy is the schema descriptor for deleted_by field.
-	addressDescDeletedBy := addressFields[10].Descriptor()
+	addressDescDeletedBy := addressFields[11].Descriptor()
 	// address.DefaultDeletedBy holds the default value on creation for the deleted_by field.
 	address.DefaultDeletedBy = addressDescDeletedBy.Default.(func() uuid.UUID)
 	// addressDescIsDeleted is the schema descriptor for is_deleted field.
-	addressDescIsDeleted := addressFields[11].Descriptor()
+	addressDescIsDeleted := addressFields[12].Descriptor()
 	// address.DefaultIsDeleted holds the default value on creation for the is_deleted field.
-	address.DefaultIsDeleted = addressDescIsDeleted.Default.(int)
-	// address.IsDeletedValidator is a validator for the "is_deleted" field. It is called by the builders before save.
-	address.IsDeletedValidator = addressDescIsDeleted.Validators[0].(func(int) error)
+	address.DefaultIsDeleted = addressDescIsDeleted.Default.(int64)
 	// addressDescID is the schema descriptor for id field.
-	addressDescID := addressFields[4].Descriptor()
+	addressDescID := addressFields[5].Descriptor()
 	// address.DefaultID holds the default value on creation for the id field.
 	address.DefaultID = addressDescID.Default.(func() uuid.UUID)
 	userFields := schema.User{}.Fields()
@@ -113,47 +110,9 @@ func init() {
 	// userDescIsDeleted is the schema descriptor for is_deleted field.
 	userDescIsDeleted := userFields[11].Descriptor()
 	// user.DefaultIsDeleted holds the default value on creation for the is_deleted field.
-	user.DefaultIsDeleted = userDescIsDeleted.Default.(int)
-	// user.IsDeletedValidator is a validator for the "is_deleted" field. It is called by the builders before save.
-	user.IsDeletedValidator = userDescIsDeleted.Validators[0].(func(int) error)
+	user.DefaultIsDeleted = userDescIsDeleted.Default.(int64)
 	// userDescID is the schema descriptor for id field.
 	userDescID := userFields[4].Descriptor()
 	// user.DefaultID holds the default value on creation for the id field.
 	user.DefaultID = userDescID.Default.(func() uuid.UUID)
-	useraddressFields := schema.UserAddress{}.Fields()
-	_ = useraddressFields
-	// useraddressDescCreatedAt is the schema descriptor for created_at field.
-	useraddressDescCreatedAt := useraddressFields[3].Descriptor()
-	// useraddress.DefaultCreatedAt holds the default value on creation for the created_at field.
-	useraddress.DefaultCreatedAt = useraddressDescCreatedAt.Default.(func() time.Time)
-	// useraddressDescCreatedBy is the schema descriptor for created_by field.
-	useraddressDescCreatedBy := useraddressFields[4].Descriptor()
-	// useraddress.DefaultCreatedBy holds the default value on creation for the created_by field.
-	useraddress.DefaultCreatedBy = useraddressDescCreatedBy.Default.(func() uuid.UUID)
-	// useraddressDescUpdatedAt is the schema descriptor for updated_at field.
-	useraddressDescUpdatedAt := useraddressFields[5].Descriptor()
-	// useraddress.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	useraddress.DefaultUpdatedAt = useraddressDescUpdatedAt.Default.(func() time.Time)
-	// useraddressDescUpdatedBy is the schema descriptor for updated_by field.
-	useraddressDescUpdatedBy := useraddressFields[6].Descriptor()
-	// useraddress.DefaultUpdatedBy holds the default value on creation for the updated_by field.
-	useraddress.DefaultUpdatedBy = useraddressDescUpdatedBy.Default.(func() uuid.UUID)
-	// useraddressDescDeletedAt is the schema descriptor for deleted_at field.
-	useraddressDescDeletedAt := useraddressFields[7].Descriptor()
-	// useraddress.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	useraddress.DefaultDeletedAt = useraddressDescDeletedAt.Default.(func() time.Time)
-	// useraddressDescDeletedBy is the schema descriptor for deleted_by field.
-	useraddressDescDeletedBy := useraddressFields[8].Descriptor()
-	// useraddress.DefaultDeletedBy holds the default value on creation for the deleted_by field.
-	useraddress.DefaultDeletedBy = useraddressDescDeletedBy.Default.(func() uuid.UUID)
-	// useraddressDescIsDeleted is the schema descriptor for is_deleted field.
-	useraddressDescIsDeleted := useraddressFields[9].Descriptor()
-	// useraddress.DefaultIsDeleted holds the default value on creation for the is_deleted field.
-	useraddress.DefaultIsDeleted = useraddressDescIsDeleted.Default.(int)
-	// useraddress.IsDeletedValidator is a validator for the "is_deleted" field. It is called by the builders before save.
-	useraddress.IsDeletedValidator = useraddressDescIsDeleted.Validators[0].(func(int) error)
-	// useraddressDescID is the schema descriptor for id field.
-	useraddressDescID := useraddressFields[2].Descriptor()
-	// useraddress.DefaultID holds the default value on creation for the id field.
-	useraddress.DefaultID = useraddressDescID.Default.(func() uuid.UUID)
 }

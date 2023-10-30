@@ -11,8 +11,49 @@ import "pagination.proto";
 // i use go_package for generated protobuf because here i use Go programming language
 option go_package = "generated/pb";
 
-// for empty RPC service parameter
-message Empty {}
+// list services
+service UserService {
+  rpc GetUsers(UserPaginationRequest) returns (UserResponsePagination);
+  rpc GetUser(GetUserRequest) returns (User);
+  rpc CreateUser(CreateUserRequest) returns (User);
+  rpc UpdateUser(UpdateUserRequest) returns (User);
+  rpc DeleteUser(DeleteUserRequest) returns (User);
+}
+
+// as user request
+message GetUserRequest {
+  string id = 1;
+}
+
+// for request create user
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;
+  uint64 age = 3;
+  repeated string hobbies = 4;
+  AddressCreateRequest address = 5;
+  message Overview {
+    string intro = 1;
+  }
+}
+
+// for request update user
+message UpdateUserRequest {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  uint64 age = 4;
+  repeated string hobbies = 5;
+  Address address = 6;
+  message Overview {
+    string intro = 1;
+  }
+}
+
+// for request delete user
+message DeleteUserRequest {
+  string id = 1;
+}
 
 // as entity user for protobuf schema
 message User {
@@ -26,7 +67,7 @@ message User {
   repeated string hobbies = 5;
 
   // use custom/object datatype for address user
-  repeated Address address = 6;
+  Address address = 6;
 
   // use embeded protobuf message inside protobuf message
   message Overview {
@@ -38,4 +79,11 @@ message User {
 message UserResponsePagination {
   Pagination pagination = 1;
   repeated User data = 2;
+}
+
+// as request pagination
+message UserPaginationRequest {
+  uint64 limit = 1;
+  uint64 page = 2;
+  uint64 is_deleted = 3;
 }

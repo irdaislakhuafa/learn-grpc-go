@@ -182,14 +182,14 @@ func (uu *UserUpdate) ClearDeletedBy() *UserUpdate {
 }
 
 // SetIsDeleted sets the "is_deleted" field.
-func (uu *UserUpdate) SetIsDeleted(i int) *UserUpdate {
+func (uu *UserUpdate) SetIsDeleted(i int64) *UserUpdate {
 	uu.mutation.ResetIsDeleted()
 	uu.mutation.SetIsDeleted(i)
 	return uu
 }
 
 // SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableIsDeleted(i *int) *UserUpdate {
+func (uu *UserUpdate) SetNillableIsDeleted(i *int64) *UserUpdate {
 	if i != nil {
 		uu.SetIsDeleted(*i)
 	}
@@ -197,7 +197,7 @@ func (uu *UserUpdate) SetNillableIsDeleted(i *int) *UserUpdate {
 }
 
 // AddIsDeleted adds i to the "is_deleted" field.
-func (uu *UserUpdate) AddIsDeleted(i int) *UserUpdate {
+func (uu *UserUpdate) AddIsDeleted(i int64) *UserUpdate {
 	uu.mutation.AddIsDeleted(i)
 	return uu
 }
@@ -249,11 +249,6 @@ func (uu *UserUpdate) check() error {
 	if v, ok := uu.mutation.Age(); ok {
 		if err := user.AgeValidator(v); err != nil {
 			return &ValidationError{Name: "age", err: fmt.Errorf(`generated: validator failed for field "User.age": %w`, err)}
-		}
-	}
-	if v, ok := uu.mutation.IsDeleted(); ok {
-		if err := user.IsDeletedValidator(v); err != nil {
-			return &ValidationError{Name: "is_deleted", err: fmt.Errorf(`generated: validator failed for field "User.is_deleted": %w`, err)}
 		}
 	}
 	return nil
@@ -325,10 +320,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.ClearField(user.FieldDeletedBy, field.TypeUUID)
 	}
 	if value, ok := uu.mutation.IsDeleted(); ok {
-		_spec.SetField(user.FieldIsDeleted, field.TypeInt, value)
+		_spec.SetField(user.FieldIsDeleted, field.TypeInt64, value)
 	}
 	if value, ok := uu.mutation.AddedIsDeleted(); ok {
-		_spec.AddField(user.FieldIsDeleted, field.TypeInt, value)
+		_spec.AddField(user.FieldIsDeleted, field.TypeInt64, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -502,14 +497,14 @@ func (uuo *UserUpdateOne) ClearDeletedBy() *UserUpdateOne {
 }
 
 // SetIsDeleted sets the "is_deleted" field.
-func (uuo *UserUpdateOne) SetIsDeleted(i int) *UserUpdateOne {
+func (uuo *UserUpdateOne) SetIsDeleted(i int64) *UserUpdateOne {
 	uuo.mutation.ResetIsDeleted()
 	uuo.mutation.SetIsDeleted(i)
 	return uuo
 }
 
 // SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableIsDeleted(i *int) *UserUpdateOne {
+func (uuo *UserUpdateOne) SetNillableIsDeleted(i *int64) *UserUpdateOne {
 	if i != nil {
 		uuo.SetIsDeleted(*i)
 	}
@@ -517,7 +512,7 @@ func (uuo *UserUpdateOne) SetNillableIsDeleted(i *int) *UserUpdateOne {
 }
 
 // AddIsDeleted adds i to the "is_deleted" field.
-func (uuo *UserUpdateOne) AddIsDeleted(i int) *UserUpdateOne {
+func (uuo *UserUpdateOne) AddIsDeleted(i int64) *UserUpdateOne {
 	uuo.mutation.AddIsDeleted(i)
 	return uuo
 }
@@ -582,11 +577,6 @@ func (uuo *UserUpdateOne) check() error {
 	if v, ok := uuo.mutation.Age(); ok {
 		if err := user.AgeValidator(v); err != nil {
 			return &ValidationError{Name: "age", err: fmt.Errorf(`generated: validator failed for field "User.age": %w`, err)}
-		}
-	}
-	if v, ok := uuo.mutation.IsDeleted(); ok {
-		if err := user.IsDeletedValidator(v); err != nil {
-			return &ValidationError{Name: "is_deleted", err: fmt.Errorf(`generated: validator failed for field "User.is_deleted": %w`, err)}
 		}
 	}
 	return nil
@@ -675,10 +665,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		_spec.ClearField(user.FieldDeletedBy, field.TypeUUID)
 	}
 	if value, ok := uuo.mutation.IsDeleted(); ok {
-		_spec.SetField(user.FieldIsDeleted, field.TypeInt, value)
+		_spec.SetField(user.FieldIsDeleted, field.TypeInt64, value)
 	}
 	if value, ok := uuo.mutation.AddedIsDeleted(); ok {
-		_spec.AddField(user.FieldIsDeleted, field.TypeInt, value)
+		_spec.AddField(user.FieldIsDeleted, field.TypeInt64, value)
 	}
 	_node = &User{config: uuo.config}
 	_spec.Assign = _node.assignValues
