@@ -116,7 +116,7 @@ func (self *user) GetListWithPagination(ctx context.Context, params parameter.Us
 	}
 
 	// count total data all user
-	totalUser, err := self.psql.User.Query().Count(ctx)
+	totalUser, err := self.psql.User.Query().Where(psqlUser.IsDeleted(params.IsDeleted)).Count(ctx)
 	if err != nil {
 		return nil, err
 	}
