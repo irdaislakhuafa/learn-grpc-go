@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package protobuf;
+
+import "empty.proto";
+import "pagination.proto";
+
+option go_package = "generated/pb";
+
+service RoleService {
+  rpc GetRoles(RolePaginationRequest) returns (RoleResponsePagination);
+  rpc GetRole(Empty) returns (Role);
+  rpc CreateRole(CreateRoleRequest) returns (Role);
+  rpc UpdateRole(UpdateRoleRequest) returns (Role);
+  rpc DeleteRole(DeleteRoleRequest) returns (Role);
+}
+
+message Role {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message RoleResponsePagination {
+  Pagination pagination = 1;
+  repeated Role data = 2;
+}
+
+message RolePaginationRequest {
+  uint64 limit = 1;
+  uint64 page = 2;
+  uint64 is_deleted = 3;
+}
+
+message CreateRoleRequest {
+  string id = 1;
+}
+
+message UpdateRoleRequest {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message DeleteRoleRequest {
+  string id = 1;
+}
