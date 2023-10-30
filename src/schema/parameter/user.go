@@ -9,3 +9,11 @@ type UserPaginationParam struct {
 type UserGetParam struct {
 	ID string `json:"id,omitempty"`
 }
+
+type UserCreateParam struct {
+	Name    string             `json:"name,omitempty"`
+	Email   string             `json:"email,omitempty"`
+	Age     int                `json:"age,omitempty"`
+	Hobbies []string           `json:"hobbies,omitempty"`
+	Address AddressCreateParam `json:"address,omitempty"`
+}

@@ -2,7 +2,9 @@ package user
 
 import (
 	"context"
+	"database/sql"
 	"errors"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/entity"
@@ -17,6 +19,7 @@ import (
 type Interface interface {
 	GetListWithPagination(ctx context.Context, params parameter.UserPaginationParam) (*entity.ResponsePagination[entity.Pagination, []entity.User], error)
 	Get(ctx context.Context, params parameter.UserGetParam) (*entity.User, error)
+	Create(ctx context.Context, params parameter.UserCreateParam) (*entity.User, error)
 }
 
 type user struct {
@@ -181,6 +184,75 @@ func (self *user) Get(ctx context.Context, params parameter.UserGetParam) (*enti
 			IsDeleted:   address.IsDeleted,
 		},
 		IsDeleted: address.IsDeleted,
+	}
+
+	return &result, nil
+}
+
+func (self *user) Create(ctx context.Context, params parameter.UserCreateParam) (*entity.User, error) {
+	tx, err := self.psql.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	user, err := tx.User.Create().
+		SetName(params.Name).
+		SetEmail(params.Email).
+		SetAge(params.Age).
+		SetHobbies(params.Hobbies).
+		SetCreatedAt(time.Now()).
+
+		// TODO: set authentication for GRPC
+		SetCreatedBy(uuid.New()).
+		Save(ctx)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("cannot create user"))
+	}
+
+	address, err := tx.Address.Create().
+		SetCountry(params.Address.Country).
+		SetRegency(params.Address.Regency).
+		SetSubDistrict(params.Address.SubDistrict).
+		SetUserID(user.ID).
+
+		// TODO: set authentication for GRPC
+		SetCreatedBy(uuid.New()).
+		Save(ctx)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("cannot create address"))
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, errors.Join(err, errors.New("cannot commit create user"))
+	}
+
+	result := entity.User{
+		ID:        user.ID,
+		Name:      user.Name,
+		Email:     user.Email,
+		Age:       user.Age,
+		Hobbies:   user.Hobbies,
+		CreatedAt: user.CreatedAt,
+		CreatedBy: user.CreatedBy,
+		UpdatedAt: user.UpdatedAt,
+		UpdatedBy: user.UpdatedBy,
+		DeletedAt: user.DeletedAt,
+		DeletedBy: user.DeletedBy,
+		Address: entity.Address{
+			ID:          address.ID,
+			Regency:     address.Regency,
+			Country:     address.Country,
+			SubDistrict: address.SubDistrict,
+			CreatedAt:   address.CreatedAt,
+			CreatedBy:   address.CreatedBy,
+			UpdatedAt:   address.UpdatedAt,
+			UpdatedBy:   address.UpdatedBy,
+			DeletedAt:   address.DeletedAt,
+			DeletedBy:   address.DeletedBy,
+			IsDeleted:   address.IsDeleted,
+		},
+		IsDeleted: user.IsDeleted,
 	}
 
 	return &result, nil
