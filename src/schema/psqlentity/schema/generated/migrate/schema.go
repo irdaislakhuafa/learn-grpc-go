@@ -30,6 +30,28 @@ var (
 		Columns:    AddressesColumns,
 		PrimaryKey: []*schema.Column{AddressesColumns[0]},
 	}
+	// PurchasesColumns holds the columns for the "purchases" table.
+	PurchasesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "product_id", Type: field.TypeUUID},
+		{Name: "supplier_id", Type: field.TypeUUID},
+		{Name: "quantity", Type: field.TypeInt64},
+		{Name: "date", Type: field.TypeTime},
+		{Name: "total_amount", Type: field.TypeInt64},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "created_by", Type: field.TypeUUID, Unique: true},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true},
+		{Name: "updated_by", Type: field.TypeUUID, Unique: true, Nullable: true},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "deleted_by", Type: field.TypeUUID, Unique: true, Nullable: true},
+		{Name: "is_deleted", Type: field.TypeInt64, Default: 0},
+	}
+	// PurchasesTable holds the schema information for the "purchases" table.
+	PurchasesTable = &schema.Table{
+		Name:       "purchases",
+		Columns:    PurchasesColumns,
+		PrimaryKey: []*schema.Column{PurchasesColumns[0]},
+	}
 	// RolesColumns holds the columns for the "roles" table.
 	RolesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
@@ -94,6 +116,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AddressesTable,
+		PurchasesTable,
 		RolesTable,
 		SalesTable,
 		UsersTable,

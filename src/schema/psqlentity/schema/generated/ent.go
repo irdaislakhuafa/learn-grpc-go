@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/address"
+	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/purchase"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/role"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/sale"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/user"
@@ -76,10 +77,11 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			address.Table: address.ValidColumn,
-			role.Table:    role.ValidColumn,
-			sale.Table:    sale.ValidColumn,
-			user.Table:    user.ValidColumn,
+			address.Table:  address.ValidColumn,
+			purchase.Table: purchase.ValidColumn,
+			role.Table:     role.ValidColumn,
+			sale.Table:     sale.ValidColumn,
+			user.Table:     user.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

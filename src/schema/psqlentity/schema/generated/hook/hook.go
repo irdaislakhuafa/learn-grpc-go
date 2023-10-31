@@ -21,6 +21,18 @@ func (f AddressFunc) Mutate(ctx context.Context, m generated.Mutation) (generate
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *generated.AddressMutation", m)
 }
 
+// The PurchaseFunc type is an adapter to allow the use of ordinary
+// function as Purchase mutator.
+type PurchaseFunc func(context.Context, *generated.PurchaseMutation) (generated.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PurchaseFunc) Mutate(ctx context.Context, m generated.Mutation) (generated.Value, error) {
+	if mv, ok := m.(*generated.PurchaseMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *generated.PurchaseMutation", m)
+}
+
 // The RoleFunc type is an adapter to allow the use of ordinary
 // function as Role mutator.
 type RoleFunc func(context.Context, *generated.RoleMutation) (generated.Value, error)

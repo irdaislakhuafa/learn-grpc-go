@@ -16,6 +16,7 @@ import (
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/address"
+	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/purchase"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/role"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/sale"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/user"
@@ -28,6 +29,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Address is the client for interacting with the Address builders.
 	Address *AddressClient
+	// Purchase is the client for interacting with the Purchase builders.
+	Purchase *PurchaseClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
 	// Sale is the client for interacting with the Sale builders.
@@ -48,6 +51,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Address = NewAddressClient(c.config)
+	c.Purchase = NewPurchaseClient(c.config)
 	c.Role = NewRoleClient(c.config)
 	c.Sale = NewSaleClient(c.config)
 	c.User = NewUserClient(c.config)
@@ -134,12 +138,13 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		Address: NewAddressClient(cfg),
-		Role:    NewRoleClient(cfg),
-		Sale:    NewSaleClient(cfg),
-		User:    NewUserClient(cfg),
+		ctx:      ctx,
+		config:   cfg,
+		Address:  NewAddressClient(cfg),
+		Purchase: NewPurchaseClient(cfg),
+		Role:     NewRoleClient(cfg),
+		Sale:     NewSaleClient(cfg),
+		User:     NewUserClient(cfg),
 	}, nil
 }
 
@@ -157,12 +162,13 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		Address: NewAddressClient(cfg),
-		Role:    NewRoleClient(cfg),
-		Sale:    NewSaleClient(cfg),
-		User:    NewUserClient(cfg),
+		ctx:      ctx,
+		config:   cfg,
+		Address:  NewAddressClient(cfg),
+		Purchase: NewPurchaseClient(cfg),
+		Role:     NewRoleClient(cfg),
+		Sale:     NewSaleClient(cfg),
+		User:     NewUserClient(cfg),
 	}, nil
 }
 
@@ -192,6 +198,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Address.Use(hooks...)
+	c.Purchase.Use(hooks...)
 	c.Role.Use(hooks...)
 	c.Sale.Use(hooks...)
 	c.User.Use(hooks...)
@@ -201,6 +208,7 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Address.Intercept(interceptors...)
+	c.Purchase.Intercept(interceptors...)
 	c.Role.Intercept(interceptors...)
 	c.Sale.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
@@ -211,6 +219,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *AddressMutation:
 		return c.Address.mutate(ctx, m)
+	case *PurchaseMutation:
+		return c.Purchase.mutate(ctx, m)
 	case *RoleMutation:
 		return c.Role.mutate(ctx, m)
 	case *SaleMutation:
@@ -352,6 +362,139 @@ func (c *AddressClient) mutate(ctx context.Context, m *AddressMutation) (Value, 
 		return (&AddressDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("generated: unknown Address mutation op: %q", m.Op())
+	}
+}
+
+// PurchaseClient is a client for the Purchase schema.
+type PurchaseClient struct {
+	config
+}
+
+// NewPurchaseClient returns a client for the Purchase from the given config.
+func NewPurchaseClient(c config) *PurchaseClient {
+	return &PurchaseClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `purchase.Hooks(f(g(h())))`.
+func (c *PurchaseClient) Use(hooks ...Hook) {
+	c.hooks.Purchase = append(c.hooks.Purchase, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `purchase.Intercept(f(g(h())))`.
+func (c *PurchaseClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Purchase = append(c.inters.Purchase, interceptors...)
+}
+
+// Create returns a builder for creating a Purchase entity.
+func (c *PurchaseClient) Create() *PurchaseCreate {
+	mutation := newPurchaseMutation(c.config, OpCreate)
+	return &PurchaseCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Purchase entities.
+func (c *PurchaseClient) CreateBulk(builders ...*PurchaseCreate) *PurchaseCreateBulk {
+	return &PurchaseCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PurchaseClient) MapCreateBulk(slice any, setFunc func(*PurchaseCreate, int)) *PurchaseCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PurchaseCreateBulk{err: fmt.Errorf("calling to PurchaseClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PurchaseCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PurchaseCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Purchase.
+func (c *PurchaseClient) Update() *PurchaseUpdate {
+	mutation := newPurchaseMutation(c.config, OpUpdate)
+	return &PurchaseUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PurchaseClient) UpdateOne(pu *Purchase) *PurchaseUpdateOne {
+	mutation := newPurchaseMutation(c.config, OpUpdateOne, withPurchase(pu))
+	return &PurchaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PurchaseClient) UpdateOneID(id uuid.UUID) *PurchaseUpdateOne {
+	mutation := newPurchaseMutation(c.config, OpUpdateOne, withPurchaseID(id))
+	return &PurchaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Purchase.
+func (c *PurchaseClient) Delete() *PurchaseDelete {
+	mutation := newPurchaseMutation(c.config, OpDelete)
+	return &PurchaseDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PurchaseClient) DeleteOne(pu *Purchase) *PurchaseDeleteOne {
+	return c.DeleteOneID(pu.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PurchaseClient) DeleteOneID(id uuid.UUID) *PurchaseDeleteOne {
+	builder := c.Delete().Where(purchase.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PurchaseDeleteOne{builder}
+}
+
+// Query returns a query builder for Purchase.
+func (c *PurchaseClient) Query() *PurchaseQuery {
+	return &PurchaseQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePurchase},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Purchase entity by its id.
+func (c *PurchaseClient) Get(ctx context.Context, id uuid.UUID) (*Purchase, error) {
+	return c.Query().Where(purchase.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PurchaseClient) GetX(ctx context.Context, id uuid.UUID) *Purchase {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *PurchaseClient) Hooks() []Hook {
+	return c.hooks.Purchase
+}
+
+// Interceptors returns the client interceptors.
+func (c *PurchaseClient) Interceptors() []Interceptor {
+	return c.inters.Purchase
+}
+
+func (c *PurchaseClient) mutate(ctx context.Context, m *PurchaseMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PurchaseCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PurchaseUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PurchaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PurchaseDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("generated: unknown Purchase mutation op: %q", m.Op())
 	}
 }
 
@@ -757,9 +900,9 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Address, Role, Sale, User []ent.Hook
+		Address, Purchase, Role, Sale, User []ent.Hook
 	}
 	inters struct {
-		Address, Role, Sale, User []ent.Interceptor
+		Address, Purchase, Role, Sale, User []ent.Interceptor
 	}
 )
