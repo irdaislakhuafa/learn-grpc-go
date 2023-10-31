@@ -1,0 +1,49 @@
+syntax = "proto3";
+package protobuf;
+
+import "pagination.proto";
+
+option go_package = "generated/pb";
+
+service SaleService {
+  rpc GetSales(PaginationRequest) returns (SaleResponsePagination);
+  rpc GetSale(GetSaleRequest) returns (Sale);
+  rpc CreateSale(CreateSaleRequest) returns (Sale);
+  rpc UpdateSale(UpdateSaleRequest) returns (Sale);
+  rpc DeleteSale(DeleteSaleRequest) returns (Sale);
+}
+
+message Sale {
+  string id = 1;
+  string product_id = 2;
+  string supplier_id = 3;
+  string quantity = 4;
+  int64 total_amount = 5;
+  string date = 6;
+  int64 is_deleted = 7;
+}
+
+message CreateSaleRequest {
+  string product_id = 1;
+  string supplier_id = 2;
+  int64 total_amount = 3;
+}
+message UpdateSaleRequest {
+  string id = 1;
+  string product_id = 2;
+  string supplier_id = 3;
+  int64 total_amount = 4;
+}
+
+message DeleteSaleRequest {
+  string id = 1;
+}
+
+message GetSaleRequest {
+  string id = 1;
+}
+
+message SaleResponsePagination {
+  Pagination pagination = 1;
+  repeated Sale data = 2;
+}

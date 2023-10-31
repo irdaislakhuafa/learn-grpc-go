@@ -9,7 +9,7 @@ option go_package = "generated/pb";
 
 service RoleService {
   rpc GetRoles(PaginationRequest) returns (RoleResponsePagination);
-  rpc GetRole(Empty) returns (Role);
+  rpc GetRole(GetRoleRequest) returns (Role);
   rpc CreateRole(CreateRoleRequest) returns (Role);
   rpc UpdateRole(UpdateRoleRequest) returns (Role);
   rpc DeleteRole(DeleteRoleRequest) returns (Role);
@@ -37,5 +37,9 @@ message UpdateRoleRequest {
 }
 
 message DeleteRoleRequest {
+  string id = 1;
+}
+
+message GetRoleRequest {
   string id = 1;
 }
