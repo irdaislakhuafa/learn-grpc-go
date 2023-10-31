@@ -2,7 +2,9 @@ package sale
 
 import (
 	"context"
+	"database/sql"
 	"errors"
+	"time"
 
 	"github.com/google/uuid"
 	domSale "github.com/irdaislakhuafa/learn-grpc-go/src/business/domain/sale"
@@ -101,7 +103,40 @@ func (self *sale) Get(ctx context.Context, params parameter.SaleGetParam) (*enti
 }
 
 func (self *sale) Create(ctx context.Context, params parameter.SaleCreateParam) (*entity.Sale, error) {
-	panic("not implemented") // TODO: Implement
+	tx, err := self.psql.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	productID, err := uuid.Parse(params.ProductID)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("product_id is not uuid"))
+	}
+
+	sale, err := tx.Sale.Create().
+		SetProductID(productID).
+		SetQuantity(params.Quantity).
+		SetTotalAmount(params.TotalAmount).
+		SetDate(time.Now()).
+
+		// TODO: set authentication for GRPC
+		SetCreatedBy(uuid.New()).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	result, err := self.domSale.ToEntity(*sale)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }
 
 func (self *sale) Update(ctx context.Context, params parameter.SaleUpdateParam) (*entity.Sale, error) {

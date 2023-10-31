@@ -7,10 +7,9 @@ type SaleGetParam struct {
 }
 
 type SaleCreateParam struct {
-	ProductID   string    `json:"product_id,omitempty"`
-	Quantity    int64     `json:"quantity,omitempty"`
-	TotalAmount int64     `json:"total_amount,omitempty"`
-	Date        time.Time `json:"date,omitempty"`
+	ProductID   string `json:"product_id,omitempty"`
+	Quantity    int64  `json:"quantity,omitempty"`
+	TotalAmount int64  `json:"total_amount,omitempty"`
 }
 
 type SaleUpdateParam struct {
