@@ -2,6 +2,9 @@ package purchase
 
 import (
 	"context"
+	"database/sql"
+	"errors"
+	"time"
 
 	"github.com/google/uuid"
 	domPurchase "github.com/irdaislakhuafa/learn-grpc-go/src/business/domain/purchase"
@@ -99,7 +102,43 @@ func (self *purchase) Get(ctx context.Context, params parameter.PurchaseGetParam
 }
 
 func (self *purchase) Create(ctx context.Context, params parameter.PurchaseCreateParam) (*entity.Purchase, error) {
-	panic("not implemented") // TODO: Implement
+	tx, err := self.psql.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	productID, err := uuid.Parse(params.ProductID)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("product_id is not uuid"))
+	}
+
+	supplierID, err := uuid.Parse(params.SupplierID)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("supplier_id is not uuid"))
+	}
+
+	purchase, err := tx.Purchase.Create().
+		SetProductID(productID).
+		SetSupplierID(supplierID).
+		SetQuantity(params.Quantity).
+		SetTotalAmount(params.TotalAmount).
+		SetDate(time.Now()).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	result, err := self.domPurchase.ToEntity(*purchase)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }
 
 func (self *purchase) Update(ctx context.Context, params parameter.PurchaseUpdateParam) (*entity.Purchase, error) {
