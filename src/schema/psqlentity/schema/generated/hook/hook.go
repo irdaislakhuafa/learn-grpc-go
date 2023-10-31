@@ -33,6 +33,18 @@ func (f RoleFunc) Mutate(ctx context.Context, m generated.Mutation) (generated.V
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *generated.RoleMutation", m)
 }
 
+// The SaleFunc type is an adapter to allow the use of ordinary
+// function as Sale mutator.
+type SaleFunc func(context.Context, *generated.SaleMutation) (generated.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SaleFunc) Mutate(ctx context.Context, m generated.Mutation) (generated.Value, error) {
+	if mv, ok := m.(*generated.SaleMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *generated.SaleMutation", m)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *generated.UserMutation) (generated.Value, error)

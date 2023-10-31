@@ -9,6 +9,7 @@ import (
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/address"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/role"
+	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/sale"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/user"
 )
 
@@ -100,6 +101,40 @@ func init() {
 	roleDescID := roleFields[2].Descriptor()
 	// role.DefaultID holds the default value on creation for the id field.
 	role.DefaultID = roleDescID.Default.(func() uuid.UUID)
+	saleFields := schema.Sale{}.Fields()
+	_ = saleFields
+	// saleDescCreatedAt is the schema descriptor for created_at field.
+	saleDescCreatedAt := saleFields[5].Descriptor()
+	// sale.DefaultCreatedAt holds the default value on creation for the created_at field.
+	sale.DefaultCreatedAt = saleDescCreatedAt.Default.(func() time.Time)
+	// saleDescCreatedBy is the schema descriptor for created_by field.
+	saleDescCreatedBy := saleFields[6].Descriptor()
+	// sale.DefaultCreatedBy holds the default value on creation for the created_by field.
+	sale.DefaultCreatedBy = saleDescCreatedBy.Default.(func() uuid.UUID)
+	// saleDescUpdatedAt is the schema descriptor for updated_at field.
+	saleDescUpdatedAt := saleFields[7].Descriptor()
+	// sale.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	sale.DefaultUpdatedAt = saleDescUpdatedAt.Default.(func() time.Time)
+	// saleDescUpdatedBy is the schema descriptor for updated_by field.
+	saleDescUpdatedBy := saleFields[8].Descriptor()
+	// sale.DefaultUpdatedBy holds the default value on creation for the updated_by field.
+	sale.DefaultUpdatedBy = saleDescUpdatedBy.Default.(func() uuid.UUID)
+	// saleDescDeletedAt is the schema descriptor for deleted_at field.
+	saleDescDeletedAt := saleFields[9].Descriptor()
+	// sale.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	sale.DefaultDeletedAt = saleDescDeletedAt.Default.(func() time.Time)
+	// saleDescDeletedBy is the schema descriptor for deleted_by field.
+	saleDescDeletedBy := saleFields[10].Descriptor()
+	// sale.DefaultDeletedBy holds the default value on creation for the deleted_by field.
+	sale.DefaultDeletedBy = saleDescDeletedBy.Default.(func() uuid.UUID)
+	// saleDescIsDeleted is the schema descriptor for is_deleted field.
+	saleDescIsDeleted := saleFields[11].Descriptor()
+	// sale.DefaultIsDeleted holds the default value on creation for the is_deleted field.
+	sale.DefaultIsDeleted = saleDescIsDeleted.Default.(int64)
+	// saleDescID is the schema descriptor for id field.
+	saleDescID := saleFields[4].Descriptor()
+	// sale.DefaultID holds the default value on creation for the id field.
+	sale.DefaultID = saleDescID.Default.(func() uuid.UUID)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.

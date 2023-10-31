@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/irdaislakhuafa/learn-grpc-go/src/business/domain"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/business/usecase"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/connection"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/handler/grpc"
@@ -35,8 +36,11 @@ func main() {
 		panic(err)
 	}
 
+	// init domain
+	dom := domain.Init(psql, *cfg)
+
 	// init usecase
-	uc := usecase.Init(psql, *cfg)
+	uc := usecase.Init(psql, *cfg, dom)
 
 	grpc.InitAndRun(uc, *cfg)
 }

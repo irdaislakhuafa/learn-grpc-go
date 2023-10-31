@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	domAddress "github.com/irdaislakhuafa/learn-grpc-go/src/business/domain/address"
+	domUser "github.com/irdaislakhuafa/learn-grpc-go/src/business/domain/user"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/entity"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/parameter"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated"
@@ -26,14 +28,18 @@ type Interface interface {
 }
 
 type user struct {
-	psql *generated.Client
-	cfg  config.Config
+	psql       *generated.Client
+	cfg        config.Config
+	domUser    domUser.Interface
+	domAddress domAddress.Interface
 }
 
-func Init(psql *generated.Client, cfg config.Config) Interface {
+func Init(psql *generated.Client, cfg config.Config, domUser domUser.Interface, domAddress domAddress.Interface) Interface {
 	result := user{
-		psql: psql,
-		cfg:  cfg,
+		psql:       psql,
+		cfg:        cfg,
+		domUser:    domUser,
+		domAddress: domAddress,
 	}
 	return &result
 }
@@ -81,35 +87,14 @@ func (self *user) GetListWithPagination(ctx context.Context, params parameter.Pa
 	// mapping list user from sql to entity
 	listUserEntity := []entity.User{}
 	for _, v := range listUser {
+		user, err := self.domUser.ToEntity(*v)
+		if err != nil {
+			return nil, err
+		}
+
 		address := mapListAddressByUserID[v.ID.String()]
-		user := entity.User{
-			ID:        v.ID,
-			Name:      v.Name,
-			Email:     v.Email,
-			Age:       v.Age,
-			Hobbies:   v.Hobbies,
-			CreatedAt: v.CreatedAt,
-			CreatedBy: v.CreatedBy,
-			UpdatedAt: v.CreatedAt,
-			UpdatedBy: v.UpdatedBy,
-			DeletedAt: v.DeletedAt,
-			DeletedBy: v.DeletedBy,
-			Address: entity.Address{
-				ID:          address.ID,
-				Country:     address.Country,
-				Province:    address.Province,
-				Regency:     address.Regency,
-				SubDistrict: address.SubDistrict,
-				UserID:      v.ID,
-				CreatedAt:   address.CreatedAt,
-				CreatedBy:   address.CreatedBy,
-				UpdatedAt:   address.UpdatedAt,
-				UpdatedBy:   address.UpdatedBy,
-				DeletedAt:   address.DeletedAt,
-				DeletedBy:   address.DeletedBy,
-				IsDeleted:   address.IsDeleted,
-			},
-			IsDeleted: v.IsDeleted,
+		if user.Address, err = self.domAddress.ToEntity(address, user.ID); err != nil {
+			return nil, err
 		}
 
 		listUserEntity = append(listUserEntity, user)
@@ -159,34 +144,13 @@ func (self *user) Get(ctx context.Context, params parameter.UserGetParam) (*enti
 
 	}
 
-	result := entity.User{
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     user.Email,
-		Age:       user.Age,
-		Hobbies:   user.Hobbies,
-		CreatedAt: user.CreatedAt,
-		CreatedBy: user.CreatedBy,
-		UpdatedAt: user.UpdatedAt,
-		UpdatedBy: user.UpdatedBy,
-		DeletedAt: user.DeletedAt,
-		DeletedBy: user.DeletedBy,
-		Address: entity.Address{
-			ID:          address.ID,
-			Country:     address.Country,
-			Province:    address.Province,
-			Regency:     address.Regency,
-			SubDistrict: address.SubDistrict,
-			UserID:      address.UserID,
-			CreatedAt:   address.CreatedAt,
-			CreatedBy:   address.CreatedBy,
-			UpdatedAt:   address.UpdatedAt,
-			UpdatedBy:   address.UpdatedBy,
-			DeletedAt:   address.DeletedAt,
-			DeletedBy:   address.DeletedBy,
-			IsDeleted:   address.IsDeleted,
-		},
-		IsDeleted: address.IsDeleted,
+	result, err := self.domUser.ToEntity(*user)
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Address, err = self.domAddress.ToEntity(*address, result.ID); err != nil {
+		return nil, err
 	}
 
 	return &result, nil
@@ -231,32 +195,13 @@ func (self *user) Create(ctx context.Context, params parameter.UserCreateParam) 
 		return nil, errors.Join(err, errors.New("cannot commit create user"))
 	}
 
-	result := entity.User{
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     user.Email,
-		Age:       user.Age,
-		Hobbies:   user.Hobbies,
-		CreatedAt: user.CreatedAt,
-		CreatedBy: user.CreatedBy,
-		UpdatedAt: user.UpdatedAt,
-		UpdatedBy: user.UpdatedBy,
-		DeletedAt: user.DeletedAt,
-		DeletedBy: user.DeletedBy,
-		Address: entity.Address{
-			ID:          address.ID,
-			Regency:     address.Regency,
-			Country:     address.Country,
-			SubDistrict: address.SubDistrict,
-			CreatedAt:   address.CreatedAt,
-			CreatedBy:   address.CreatedBy,
-			UpdatedAt:   address.UpdatedAt,
-			UpdatedBy:   address.UpdatedBy,
-			DeletedAt:   address.DeletedAt,
-			DeletedBy:   address.DeletedBy,
-			IsDeleted:   address.IsDeleted,
-		},
-		IsDeleted: user.IsDeleted,
+	result, err := self.domUser.ToEntity(*user)
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Address, err = self.domAddress.ToEntity(*address, result.ID); err != nil {
+		return nil, err
 	}
 
 	return &result, nil
@@ -317,34 +262,13 @@ func (self *user) Update(ctx context.Context, params parameter.UserUpdateParam) 
 		return nil, err
 	}
 
-	result := entity.User{
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     user.Email,
-		Age:       user.Age,
-		Hobbies:   user.Hobbies,
-		CreatedAt: user.CreatedAt,
-		CreatedBy: user.CreatedBy,
-		UpdatedAt: user.UpdatedAt,
-		UpdatedBy: user.UpdatedBy,
-		DeletedAt: user.DeletedAt,
-		DeletedBy: user.DeletedBy,
-		Address: entity.Address{
-			ID:          address.ID,
-			Country:     address.Country,
-			Province:    address.Province,
-			Regency:     address.Regency,
-			SubDistrict: address.SubDistrict,
-			UserID:      address.UserID,
-			CreatedAt:   address.CreatedAt,
-			CreatedBy:   address.CreatedBy,
-			UpdatedAt:   address.UpdatedAt,
-			UpdatedBy:   address.UpdatedBy,
-			DeletedAt:   address.DeletedAt,
-			DeletedBy:   address.DeletedBy,
-			IsDeleted:   address.IsDeleted,
-		},
-		IsDeleted: address.IsDeleted,
+	result, err := self.domUser.ToEntity(*user)
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Address, err = self.domAddress.ToEntity(*address, result.ID); err != nil {
+		return nil, err
 	}
 
 	return &result, nil
@@ -388,34 +312,13 @@ func (self *user) Delete(ctx context.Context, params parameter.UserDeleteParam) 
 		return nil, err
 	}
 
-	result := entity.User{
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     user.Email,
-		Age:       user.Age,
-		Hobbies:   user.Hobbies,
-		CreatedAt: user.CreatedAt,
-		CreatedBy: user.CreatedBy,
-		UpdatedAt: user.UpdatedAt,
-		UpdatedBy: user.UpdatedBy,
-		DeletedAt: user.DeletedAt,
-		DeletedBy: user.DeletedBy,
-		Address: entity.Address{
-			ID:          address.ID,
-			Country:     address.Country,
-			Province:    address.Province,
-			Regency:     address.Regency,
-			SubDistrict: address.SubDistrict,
-			UserID:      user.ID,
-			CreatedAt:   address.CreatedAt,
-			CreatedBy:   address.CreatedBy,
-			UpdatedAt:   address.UpdatedAt,
-			UpdatedBy:   address.UpdatedBy,
-			DeletedAt:   address.DeletedAt,
-			DeletedBy:   address.DeletedBy,
-			IsDeleted:   address.IsDeleted,
-		},
-		IsDeleted: user.IsDeleted,
+	result, err := self.domUser.ToEntity(*user)
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Address, err = self.domAddress.ToEntity(*address, result.ID); err != nil {
+		return nil, err
 	}
 	return &result, nil
 }
