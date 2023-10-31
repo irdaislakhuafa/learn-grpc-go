@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/address"
+	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/role"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/user"
 )
 
@@ -65,6 +66,40 @@ func init() {
 	addressDescID := addressFields[5].Descriptor()
 	// address.DefaultID holds the default value on creation for the id field.
 	address.DefaultID = addressDescID.Default.(func() uuid.UUID)
+	roleFields := schema.Role{}.Fields()
+	_ = roleFields
+	// roleDescCreatedAt is the schema descriptor for created_at field.
+	roleDescCreatedAt := roleFields[3].Descriptor()
+	// role.DefaultCreatedAt holds the default value on creation for the created_at field.
+	role.DefaultCreatedAt = roleDescCreatedAt.Default.(func() time.Time)
+	// roleDescCreatedBy is the schema descriptor for created_by field.
+	roleDescCreatedBy := roleFields[4].Descriptor()
+	// role.DefaultCreatedBy holds the default value on creation for the created_by field.
+	role.DefaultCreatedBy = roleDescCreatedBy.Default.(func() uuid.UUID)
+	// roleDescUpdatedAt is the schema descriptor for updated_at field.
+	roleDescUpdatedAt := roleFields[5].Descriptor()
+	// role.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	role.DefaultUpdatedAt = roleDescUpdatedAt.Default.(func() time.Time)
+	// roleDescUpdatedBy is the schema descriptor for updated_by field.
+	roleDescUpdatedBy := roleFields[6].Descriptor()
+	// role.DefaultUpdatedBy holds the default value on creation for the updated_by field.
+	role.DefaultUpdatedBy = roleDescUpdatedBy.Default.(func() uuid.UUID)
+	// roleDescDeletedAt is the schema descriptor for deleted_at field.
+	roleDescDeletedAt := roleFields[7].Descriptor()
+	// role.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	role.DefaultDeletedAt = roleDescDeletedAt.Default.(func() time.Time)
+	// roleDescDeletedBy is the schema descriptor for deleted_by field.
+	roleDescDeletedBy := roleFields[8].Descriptor()
+	// role.DefaultDeletedBy holds the default value on creation for the deleted_by field.
+	role.DefaultDeletedBy = roleDescDeletedBy.Default.(func() uuid.UUID)
+	// roleDescIsDeleted is the schema descriptor for is_deleted field.
+	roleDescIsDeleted := roleFields[9].Descriptor()
+	// role.DefaultIsDeleted holds the default value on creation for the is_deleted field.
+	role.DefaultIsDeleted = roleDescIsDeleted.Default.(int64)
+	// roleDescID is the schema descriptor for id field.
+	roleDescID := roleFields[2].Descriptor()
+	// role.DefaultID holds the default value on creation for the id field.
+	role.DefaultID = roleDescID.Default.(func() uuid.UUID)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.

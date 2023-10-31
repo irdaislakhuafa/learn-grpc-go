@@ -34,7 +34,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	GetUsers(ctx context.Context, in *UserPaginationRequest, opts ...grpc.CallOption) (*UserResponsePagination, error)
+	GetUsers(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*UserResponsePagination, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*User, error)
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*User, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*User, error)
@@ -49,7 +49,7 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
 }
 
-func (c *userServiceClient) GetUsers(ctx context.Context, in *UserPaginationRequest, opts ...grpc.CallOption) (*UserResponsePagination, error) {
+func (c *userServiceClient) GetUsers(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*UserResponsePagination, error) {
 	out := new(UserResponsePagination)
 	err := c.cc.Invoke(ctx, UserService_GetUsers_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -98,7 +98,7 @@ func (c *userServiceClient) DeleteUser(ctx context.Context, in *DeleteUserReques
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
-	GetUsers(context.Context, *UserPaginationRequest) (*UserResponsePagination, error)
+	GetUsers(context.Context, *PaginationRequest) (*UserResponsePagination, error)
 	GetUser(context.Context, *GetUserRequest) (*User, error)
 	CreateUser(context.Context, *CreateUserRequest) (*User, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*User, error)
@@ -110,7 +110,7 @@ type UserServiceServer interface {
 type UnimplementedUserServiceServer struct {
 }
 
-func (UnimplementedUserServiceServer) GetUsers(context.Context, *UserPaginationRequest) (*UserResponsePagination, error) {
+func (UnimplementedUserServiceServer) GetUsers(context.Context, *PaginationRequest) (*UserResponsePagination, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
 }
 func (UnimplementedUserServiceServer) GetUser(context.Context, *GetUserRequest) (*User, error) {
@@ -139,7 +139,7 @@ func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
 }
 
 func _UserService_GetUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserPaginationRequest)
+	in := new(PaginationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -151,7 +151,7 @@ func _UserService_GetUsers_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: UserService_GetUsers_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetUsers(ctx, req.(*UserPaginationRequest))
+		return srv.(UserServiceServer).GetUsers(ctx, req.(*PaginationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

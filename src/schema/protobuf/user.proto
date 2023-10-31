@@ -13,7 +13,7 @@ option go_package = "generated/pb";
 
 // list services
 service UserService {
-  rpc GetUsers(UserPaginationRequest) returns (UserResponsePagination);
+  rpc GetUsers(PaginationRequest) returns (UserResponsePagination);
   rpc GetUser(GetUserRequest) returns (User);
   rpc CreateUser(CreateUserRequest) returns (User);
   rpc UpdateUser(UpdateUserRequest) returns (User);
@@ -79,11 +79,4 @@ message User {
 message UserResponsePagination {
   Pagination pagination = 1;
   repeated User data = 2;
-}
-
-// as request pagination
-message UserPaginationRequest {
-  uint64 limit = 1;
-  uint64 page = 2;
-  uint64 is_deleted = 3;
 }

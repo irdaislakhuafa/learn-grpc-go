@@ -18,7 +18,7 @@ import (
 )
 
 type Interface interface {
-	GetListWithPagination(ctx context.Context, params parameter.UserPaginationParam) (*entity.ResponsePagination[entity.Pagination, []entity.User], error)
+	GetListWithPagination(ctx context.Context, params parameter.PaginationParam) (*entity.ResponsePagination[entity.Pagination, []entity.User], error)
 	Get(ctx context.Context, params parameter.UserGetParam) (*entity.User, error)
 	Create(ctx context.Context, params parameter.UserCreateParam) (*entity.User, error)
 	Update(ctx context.Context, params parameter.UserUpdateParam) (*entity.User, error)
@@ -38,7 +38,7 @@ func Init(psql *generated.Client, cfg config.Config) Interface {
 	return &result
 }
 
-func (self *user) GetListWithPagination(ctx context.Context, params parameter.UserPaginationParam) (*entity.ResponsePagination[entity.Pagination, []entity.User], error) {
+func (self *user) GetListWithPagination(ctx context.Context, params parameter.PaginationParam) (*entity.ResponsePagination[entity.Pagination, []entity.User], error) {
 	// handle pagination offset
 	offset := uint64(0)
 	if params.Page <= 1 {

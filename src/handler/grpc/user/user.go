@@ -20,7 +20,7 @@ func Init(user user.Interface) pb.UserServiceServer {
 	return &result
 }
 
-func (self *userService) GetUsers(ctx context.Context, request *pb.UserPaginationRequest) (*pb.UserResponsePagination, error) {
+func (self *userService) GetUsers(ctx context.Context, request *pb.PaginationRequest) (*pb.UserResponsePagination, error) {
 	args, err := converter.ToUserPaginationParam(request)
 	if err != nil {
 		return nil, err

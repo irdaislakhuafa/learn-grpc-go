@@ -6,8 +6,8 @@ import (
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/protobuf/generated/pb"
 )
 
-func ToUserPaginationParam(request *pb.UserPaginationRequest) (parameter.UserPaginationParam, error) {
-	result := parameter.UserPaginationParam{
+func ToUserPaginationParam(request *pb.PaginationRequest) (parameter.PaginationParam, error) {
+	result := parameter.PaginationParam{
 		Limit:     request.GetLimit(),
 		Page:      request.GetPage(),
 		IsDeleted: int64(request.GetIsDeleted()),
