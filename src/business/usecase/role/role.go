@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/entity"
@@ -153,9 +154,96 @@ func (self *role) Create(ctx context.Context, params parameter.RoleCreateParam) 
 }
 
 func (self *role) Update(ctx context.Context, params parameter.RoleUpdateParam) (*entity.Role, error) {
-	panic("not implemented") // TODO: Implement
+	id, err := uuid.Parse(params.ID)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("id is not uuid"))
+	}
+
+	tx, err := self.psql.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	err = tx.Role.Update().
+		SetName(params.Name).
+		SetDescription(params.Description).
+		SetUpdatedAt(time.Now()).
+
+		// TODO: set authentication for GRPC
+		SetUpdatedBy(uuid.New()).
+		Where(psqlRole.ID(id)).
+		Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	role, err := tx.Role.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	result := entity.Role{
+		ID:          role.ID,
+		Name:        role.Name,
+		Description: role.Description,
+		CreatedAt:   role.CreatedAt,
+		CreatedBy:   role.CreatedBy,
+		UpdatedAt:   role.UpdatedAt,
+		UpdatedBy:   role.UpdatedBy,
+		DeletedAt:   role.DeletedAt,
+		DeletedBy:   role.DeletedBy,
+		IsDeleted:   role.IsDeleted,
+	}
+
+	return &result, nil
 }
 
 func (self *role) Delete(ctx context.Context, params parameter.RoleDeleteParam) (*entity.Role, error) {
-	panic("not implemented") // TODO: Implement
+	id, err := uuid.Parse(params.ID)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("id is not uuid"))
+	}
+
+	tx, err := self.psql.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	role, err := tx.Role.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if role.IsDeleted == 1 {
+		return nil, errors.New("role is already deleted")
+	}
+
+	if err := tx.Role.UpdateOneID(id).SetIsDeleted(1).Exec(ctx); err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	result := entity.Role{
+		ID:          role.ID,
+		Name:        role.Name,
+		Description: role.Description,
+		CreatedAt:   role.CreatedAt,
+		CreatedBy:   role.CreatedBy,
+		UpdatedAt:   role.UpdatedAt,
+		UpdatedBy:   role.UpdatedBy,
+		DeletedAt:   role.DeletedAt,
+		DeletedBy:   role.DeletedBy,
+		IsDeleted:   role.IsDeleted,
+	}
+
+	return &result, nil
 }
