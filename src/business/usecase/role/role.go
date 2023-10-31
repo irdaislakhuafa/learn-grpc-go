@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	domRole "github.com/irdaislakhuafa/learn-grpc-go/src/business/domain/role"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/entity"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/parameter"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated"
@@ -25,14 +26,16 @@ type Interface interface {
 }
 
 type role struct {
-	psql *generated.Client
-	cfg  config.Config
+	psql    *generated.Client
+	cfg     config.Config
+	domRole domRole.Interface
 }
 
-func Init(psql *generated.Client, cfg config.Config) Interface {
+func Init(psql *generated.Client, cfg config.Config, domRole domRole.Interface) Interface {
 	result := role{
-		psql: psql,
-		cfg:  cfg,
+		psql:    psql,
+		cfg:     cfg,
+		domRole: domRole,
 	}
 	return &result
 }
@@ -59,17 +62,9 @@ func (self *role) GetListWithPagination(ctx context.Context, params parameter.Pa
 
 	listRoleEntity := []entity.Role{}
 	for _, v := range listRole {
-		role := entity.Role{
-			ID:          v.ID,
-			Name:        v.Name,
-			Description: v.Description,
-			CreatedAt:   v.CreatedAt,
-			CreatedBy:   v.CreatedBy,
-			UpdatedAt:   v.UpdatedAt,
-			UpdatedBy:   v.UpdatedBy,
-			DeletedAt:   v.DeletedAt,
-			DeletedBy:   v.DeletedBy,
-			IsDeleted:   v.IsDeleted,
+		role, err := self.domRole.ToEntity(*v)
+		if err != nil {
+			return nil, err
 		}
 		listRoleEntity = append(listRoleEntity, role)
 	}
@@ -99,17 +94,9 @@ func (self *role) Get(ctx context.Context, params parameter.RoleGetParam) (*enti
 		return nil, err
 	}
 
-	result := entity.Role{
-		ID:          role.ID,
-		Name:        role.Name,
-		Description: role.Description,
-		CreatedAt:   role.CreatedAt,
-		CreatedBy:   role.CreatedBy,
-		UpdatedAt:   role.UpdatedAt,
-		UpdatedBy:   role.UpdatedBy,
-		DeletedAt:   role.DeletedAt,
-		DeletedBy:   role.DeletedBy,
-		IsDeleted:   role.IsDeleted,
+	result, err := self.domRole.ToEntity(*role)
+	if err != nil {
+		return nil, err
 	}
 
 	return &result, nil
@@ -137,17 +124,9 @@ func (self *role) Create(ctx context.Context, params parameter.RoleCreateParam) 
 		return nil, err
 	}
 
-	result := entity.Role{
-		ID:          role.ID,
-		Name:        role.Name,
-		Description: role.Description,
-		CreatedAt:   role.CreatedAt,
-		CreatedBy:   role.CreatedBy,
-		UpdatedAt:   role.UpdatedAt,
-		UpdatedBy:   role.UpdatedBy,
-		DeletedAt:   role.DeletedAt,
-		DeletedBy:   role.DeletedBy,
-		IsDeleted:   role.IsDeleted,
+	result, err := self.domRole.ToEntity(*role)
+	if err != nil {
+		return nil, err
 	}
 
 	return &result, nil
@@ -187,17 +166,9 @@ func (self *role) Update(ctx context.Context, params parameter.RoleUpdateParam) 
 		return nil, err
 	}
 
-	result := entity.Role{
-		ID:          role.ID,
-		Name:        role.Name,
-		Description: role.Description,
-		CreatedAt:   role.CreatedAt,
-		CreatedBy:   role.CreatedBy,
-		UpdatedAt:   role.UpdatedAt,
-		UpdatedBy:   role.UpdatedBy,
-		DeletedAt:   role.DeletedAt,
-		DeletedBy:   role.DeletedBy,
-		IsDeleted:   role.IsDeleted,
+	result, err := self.domRole.ToEntity(*role)
+	if err != nil {
+		return nil, err
 	}
 
 	return &result, nil
@@ -232,17 +203,9 @@ func (self *role) Delete(ctx context.Context, params parameter.RoleDeleteParam) 
 		return nil, err
 	}
 
-	result := entity.Role{
-		ID:          role.ID,
-		Name:        role.Name,
-		Description: role.Description,
-		CreatedAt:   role.CreatedAt,
-		CreatedBy:   role.CreatedBy,
-		UpdatedAt:   role.UpdatedAt,
-		UpdatedBy:   role.UpdatedBy,
-		DeletedAt:   role.DeletedAt,
-		DeletedBy:   role.DeletedBy,
-		IsDeleted:   role.IsDeleted,
+	result, err := self.domRole.ToEntity(*role)
+	if err != nil {
+		return nil, err
 	}
 
 	return &result, nil
