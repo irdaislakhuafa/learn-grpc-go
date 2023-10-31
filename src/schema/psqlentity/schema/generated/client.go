@@ -17,6 +17,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/address"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/role"
+	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/sale"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/user"
 )
 
@@ -29,6 +30,8 @@ type Client struct {
 	Address *AddressClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
+	// Sale is the client for interacting with the Sale builders.
+	Sale *SaleClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -46,6 +49,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Address = NewAddressClient(c.config)
 	c.Role = NewRoleClient(c.config)
+	c.Sale = NewSaleClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -134,6 +138,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		config:  cfg,
 		Address: NewAddressClient(cfg),
 		Role:    NewRoleClient(cfg),
+		Sale:    NewSaleClient(cfg),
 		User:    NewUserClient(cfg),
 	}, nil
 }
@@ -156,6 +161,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		config:  cfg,
 		Address: NewAddressClient(cfg),
 		Role:    NewRoleClient(cfg),
+		Sale:    NewSaleClient(cfg),
 		User:    NewUserClient(cfg),
 	}, nil
 }
@@ -187,6 +193,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.Address.Use(hooks...)
 	c.Role.Use(hooks...)
+	c.Sale.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
@@ -195,6 +202,7 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Address.Intercept(interceptors...)
 	c.Role.Intercept(interceptors...)
+	c.Sale.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
 }
 
@@ -205,6 +213,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Address.mutate(ctx, m)
 	case *RoleMutation:
 		return c.Role.mutate(ctx, m)
+	case *SaleMutation:
+		return c.Sale.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	default:
@@ -478,6 +488,139 @@ func (c *RoleClient) mutate(ctx context.Context, m *RoleMutation) (Value, error)
 	}
 }
 
+// SaleClient is a client for the Sale schema.
+type SaleClient struct {
+	config
+}
+
+// NewSaleClient returns a client for the Sale from the given config.
+func NewSaleClient(c config) *SaleClient {
+	return &SaleClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `sale.Hooks(f(g(h())))`.
+func (c *SaleClient) Use(hooks ...Hook) {
+	c.hooks.Sale = append(c.hooks.Sale, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `sale.Intercept(f(g(h())))`.
+func (c *SaleClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Sale = append(c.inters.Sale, interceptors...)
+}
+
+// Create returns a builder for creating a Sale entity.
+func (c *SaleClient) Create() *SaleCreate {
+	mutation := newSaleMutation(c.config, OpCreate)
+	return &SaleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Sale entities.
+func (c *SaleClient) CreateBulk(builders ...*SaleCreate) *SaleCreateBulk {
+	return &SaleCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SaleClient) MapCreateBulk(slice any, setFunc func(*SaleCreate, int)) *SaleCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SaleCreateBulk{err: fmt.Errorf("calling to SaleClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SaleCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SaleCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Sale.
+func (c *SaleClient) Update() *SaleUpdate {
+	mutation := newSaleMutation(c.config, OpUpdate)
+	return &SaleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SaleClient) UpdateOne(s *Sale) *SaleUpdateOne {
+	mutation := newSaleMutation(c.config, OpUpdateOne, withSale(s))
+	return &SaleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SaleClient) UpdateOneID(id uuid.UUID) *SaleUpdateOne {
+	mutation := newSaleMutation(c.config, OpUpdateOne, withSaleID(id))
+	return &SaleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Sale.
+func (c *SaleClient) Delete() *SaleDelete {
+	mutation := newSaleMutation(c.config, OpDelete)
+	return &SaleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SaleClient) DeleteOne(s *Sale) *SaleDeleteOne {
+	return c.DeleteOneID(s.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SaleClient) DeleteOneID(id uuid.UUID) *SaleDeleteOne {
+	builder := c.Delete().Where(sale.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SaleDeleteOne{builder}
+}
+
+// Query returns a query builder for Sale.
+func (c *SaleClient) Query() *SaleQuery {
+	return &SaleQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSale},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Sale entity by its id.
+func (c *SaleClient) Get(ctx context.Context, id uuid.UUID) (*Sale, error) {
+	return c.Query().Where(sale.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SaleClient) GetX(ctx context.Context, id uuid.UUID) *Sale {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SaleClient) Hooks() []Hook {
+	return c.hooks.Sale
+}
+
+// Interceptors returns the client interceptors.
+func (c *SaleClient) Interceptors() []Interceptor {
+	return c.inters.Sale
+}
+
+func (c *SaleClient) mutate(ctx context.Context, m *SaleMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SaleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SaleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SaleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SaleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("generated: unknown Sale mutation op: %q", m.Op())
+	}
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -614,9 +757,9 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Address, Role, User []ent.Hook
+		Address, Role, Sale, User []ent.Hook
 	}
 	inters struct {
-		Address, Role, User []ent.Interceptor
+		Address, Role, Sale, User []ent.Interceptor
 	}
 )

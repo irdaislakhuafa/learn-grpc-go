@@ -49,6 +49,27 @@ var (
 		Columns:    RolesColumns,
 		PrimaryKey: []*schema.Column{RolesColumns[0]},
 	}
+	// SalesColumns holds the columns for the "sales" table.
+	SalesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "product_id", Type: field.TypeUUID},
+		{Name: "quantity", Type: field.TypeInt64},
+		{Name: "total_amount", Type: field.TypeInt64},
+		{Name: "date", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "created_by", Type: field.TypeUUID, Unique: true},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true},
+		{Name: "updated_by", Type: field.TypeUUID, Unique: true, Nullable: true},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "deleted_by", Type: field.TypeUUID, Unique: true, Nullable: true},
+		{Name: "is_deleted", Type: field.TypeInt64, Default: 0},
+	}
+	// SalesTable holds the schema information for the "sales" table.
+	SalesTable = &schema.Table{
+		Name:       "sales",
+		Columns:    SalesColumns,
+		PrimaryKey: []*schema.Column{SalesColumns[0]},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
@@ -74,6 +95,7 @@ var (
 	Tables = []*schema.Table{
 		AddressesTable,
 		RolesTable,
+		SalesTable,
 		UsersTable,
 	}
 )
