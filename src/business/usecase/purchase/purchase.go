@@ -142,7 +142,53 @@ func (self *purchase) Create(ctx context.Context, params parameter.PurchaseCreat
 }
 
 func (self *purchase) Update(ctx context.Context, params parameter.PurchaseUpdateParam) (*entity.Purchase, error) {
-	panic("not implemented") // TODO: Implement
+	tx, err := self.psql.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	id, err := uuid.Parse(params.ID)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("id is not uuid"))
+	}
+
+	productID, err := uuid.Parse(params.ProductID)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("product_id is not uuid"))
+	}
+
+	supplierID, err := uuid.Parse(params.SupplierID)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("supplier_id is not uuid"))
+	}
+
+	err = tx.Purchase.UpdateOneID(id).
+		SetProductID(productID).
+		SetSupplierID(supplierID).
+		SetQuantity(params.Quantity).
+		SetTotalAmount(params.TotalAmount).
+		SetDate(params.Date).
+		Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	purchase, err := tx.Purchase.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	result, err := self.domPurchase.ToEntity(*purchase)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }
 
 func (self *purchase) Delete(ctx context.Context, params parameter.PurchaseDeleteParam) (*entity.Purchase, error) {
