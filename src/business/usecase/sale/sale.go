@@ -184,5 +184,34 @@ func (self *sale) Update(ctx context.Context, params parameter.SaleUpdateParam) 
 }
 
 func (self *sale) Delete(ctx context.Context, params parameter.SaleDeleteParam) (*entity.Sale, error) {
-	panic("not implemented") // TODO: Implement
+	tx, err := self.psql.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	id, err := uuid.Parse(params.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Sale.UpdateOneID(id).SetIsDeleted(1).Exec(ctx); err != nil {
+		return nil, err
+	}
+
+	sale, err := tx.Sale.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	result, err := self.domSale.ToEntity(*sale)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }
