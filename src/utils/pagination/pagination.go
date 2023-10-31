@@ -6,8 +6,7 @@ import (
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/parameter"
 )
 
-func ParseFromParam(v parameter.PaginationParam) (parameter.PaginationParam, uint64, error) {
-	offset := uint64(0)
+func ParseFromParam(v parameter.PaginationParam) (params parameter.PaginationParam, offset uint64, err error) {
 	if v.Page <= 1 {
 		offset = 0
 	} else {
