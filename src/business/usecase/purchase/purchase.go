@@ -3,6 +3,7 @@ package purchase
 import (
 	"context"
 
+	"github.com/google/uuid"
 	domPurchase "github.com/irdaislakhuafa/learn-grpc-go/src/business/domain/purchase"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/entity"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/parameter"
@@ -79,7 +80,22 @@ func (self *purchase) GetListWithPagination(ctx context.Context, params paramete
 }
 
 func (self *purchase) Get(ctx context.Context, params parameter.PurchaseGetParam) (*entity.Purchase, error) {
-	panic("not implemented") // TODO: Implement
+	id, err := uuid.Parse(params.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	purchase, err := self.psql.Purchase.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := self.domPurchase.ToEntity(*purchase)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }
 
 func (self *purchase) Create(ctx context.Context, params parameter.PurchaseCreateParam) (*entity.Purchase, error) {
