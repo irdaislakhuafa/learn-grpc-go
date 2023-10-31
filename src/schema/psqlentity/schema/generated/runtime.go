@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/address"
+	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/purchase"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/role"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/sale"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated/user"
@@ -67,6 +68,40 @@ func init() {
 	addressDescID := addressFields[5].Descriptor()
 	// address.DefaultID holds the default value on creation for the id field.
 	address.DefaultID = addressDescID.Default.(func() uuid.UUID)
+	purchaseFields := schema.Purchase{}.Fields()
+	_ = purchaseFields
+	// purchaseDescCreatedAt is the schema descriptor for created_at field.
+	purchaseDescCreatedAt := purchaseFields[6].Descriptor()
+	// purchase.DefaultCreatedAt holds the default value on creation for the created_at field.
+	purchase.DefaultCreatedAt = purchaseDescCreatedAt.Default.(func() time.Time)
+	// purchaseDescCreatedBy is the schema descriptor for created_by field.
+	purchaseDescCreatedBy := purchaseFields[7].Descriptor()
+	// purchase.DefaultCreatedBy holds the default value on creation for the created_by field.
+	purchase.DefaultCreatedBy = purchaseDescCreatedBy.Default.(func() uuid.UUID)
+	// purchaseDescUpdatedAt is the schema descriptor for updated_at field.
+	purchaseDescUpdatedAt := purchaseFields[8].Descriptor()
+	// purchase.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	purchase.DefaultUpdatedAt = purchaseDescUpdatedAt.Default.(func() time.Time)
+	// purchaseDescUpdatedBy is the schema descriptor for updated_by field.
+	purchaseDescUpdatedBy := purchaseFields[9].Descriptor()
+	// purchase.DefaultUpdatedBy holds the default value on creation for the updated_by field.
+	purchase.DefaultUpdatedBy = purchaseDescUpdatedBy.Default.(func() uuid.UUID)
+	// purchaseDescDeletedAt is the schema descriptor for deleted_at field.
+	purchaseDescDeletedAt := purchaseFields[10].Descriptor()
+	// purchase.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	purchase.DefaultDeletedAt = purchaseDescDeletedAt.Default.(func() time.Time)
+	// purchaseDescDeletedBy is the schema descriptor for deleted_by field.
+	purchaseDescDeletedBy := purchaseFields[11].Descriptor()
+	// purchase.DefaultDeletedBy holds the default value on creation for the deleted_by field.
+	purchase.DefaultDeletedBy = purchaseDescDeletedBy.Default.(func() uuid.UUID)
+	// purchaseDescIsDeleted is the schema descriptor for is_deleted field.
+	purchaseDescIsDeleted := purchaseFields[12].Descriptor()
+	// purchase.DefaultIsDeleted holds the default value on creation for the is_deleted field.
+	purchase.DefaultIsDeleted = purchaseDescIsDeleted.Default.(int64)
+	// purchaseDescID is the schema descriptor for id field.
+	purchaseDescID := purchaseFields[5].Descriptor()
+	// purchase.DefaultID holds the default value on creation for the id field.
+	purchase.DefaultID = purchaseDescID.Default.(func() uuid.UUID)
 	roleFields := schema.Role{}.Fields()
 	_ = roleFields
 	// roleDescCreatedAt is the schema descriptor for created_at field.
