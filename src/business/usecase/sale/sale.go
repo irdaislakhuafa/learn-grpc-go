@@ -140,7 +140,47 @@ func (self *sale) Create(ctx context.Context, params parameter.SaleCreateParam) 
 }
 
 func (self *sale) Update(ctx context.Context, params parameter.SaleUpdateParam) (*entity.Sale, error) {
-	panic("not implemented") // TODO: Implement
+	tx, err := self.psql.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	id, err := uuid.Parse(params.ID)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("id is not uuid"))
+	}
+
+	productID, err := uuid.Parse(params.ProductID)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("product_id is not uuid"))
+	}
+
+	err = tx.Sale.UpdateOneID(id).
+		SetProductID(productID).
+		SetQuantity(params.Quantity).
+		SetTotalAmount(params.TotalAmount).
+		SetDate(params.Date).
+		Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	sale, err := tx.Sale.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	result, err := self.domSale.ToEntity(*sale)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }
 
 func (self *sale) Delete(ctx context.Context, params parameter.SaleDeleteParam) (*entity.Sale, error) {
