@@ -2,7 +2,10 @@ package sale
 
 import (
 	"context"
+	"errors"
 
+	"github.com/google/uuid"
+	domSale "github.com/irdaislakhuafa/learn-grpc-go/src/business/domain/sale"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/entity"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/parameter"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/psqlentity/schema/generated"
@@ -21,14 +24,16 @@ type Interface interface {
 }
 
 type sale struct {
-	psql *generated.Client
-	cfg  config.Config
+	psql    *generated.Client
+	cfg     config.Config
+	domSale domSale.Interface
 }
 
-func Init(psql *generated.Client, cfg config.Config) Interface {
+func Init(psql *generated.Client, cfg config.Config, domSale domSale.Interface) Interface {
 	result := sale{
-		psql: psql,
-		cfg:  cfg,
+		psql:    psql,
+		cfg:     cfg,
+		domSale: domSale,
 	}
 	return &result
 }
@@ -55,19 +60,9 @@ func (self *sale) GetListWithPagination(ctx context.Context, params parameter.Pa
 
 	listSaleEntity := []entity.Sale{}
 	for _, v := range listSale {
-		sale := entity.Sale{
-			ID:          v.ID,
-			ProductID:   v.ProductID,
-			Quantity:    v.Quantity,
-			TotalAmount: v.TotalAmount,
-			Date:        v.Date,
-			CreatedAt:   v.CreatedAt,
-			CreatedBy:   v.CreatedBy,
-			UpdatedAt:   v.UpdatedAt,
-			UpdatedBy:   v.UpdatedBy,
-			DeletedAt:   v.DeletedAt,
-			DeletedBy:   v.DeletedBy,
-			IsDeleted:   v.IsDeleted,
+		sale, err := self.domSale.ToEntity(*v)
+		if err != nil {
+			return nil, err
 		}
 		listSaleEntity = append(listSaleEntity, sale)
 	}
@@ -87,7 +82,22 @@ func (self *sale) GetListWithPagination(ctx context.Context, params parameter.Pa
 }
 
 func (self *sale) Get(ctx context.Context, params parameter.SaleGetParam) (*entity.Sale, error) {
-	panic("not implemented") // TODO: Implement
+	id, err := uuid.Parse(params.ID)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("id is not uuid"))
+	}
+
+	sale, err := self.psql.Sale.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := self.domSale.ToEntity(*sale)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }
 
 func (self *sale) Create(ctx context.Context, params parameter.SaleCreateParam) (*entity.Sale, error) {
