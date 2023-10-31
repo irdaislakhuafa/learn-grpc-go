@@ -192,5 +192,34 @@ func (self *purchase) Update(ctx context.Context, params parameter.PurchaseUpdat
 }
 
 func (self *purchase) Delete(ctx context.Context, params parameter.PurchaseDeleteParam) (*entity.Purchase, error) {
-	panic("not implemented") // TODO: Implement
+	tx, err := self.psql.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	id, err := uuid.Parse(params.ID)
+	if err != nil {
+		return nil, errors.Join(err, errors.New("id is not uuid"))
+	}
+
+	if err := tx.Purchase.UpdateOneID(id).SetIsDeleted(1).Exec(ctx); err != nil {
+		return nil, err
+	}
+
+	purchase, err := tx.Purchase.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	result, err := self.domPurchase.ToEntity(*purchase)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }
