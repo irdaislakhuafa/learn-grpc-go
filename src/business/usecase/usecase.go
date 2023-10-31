@@ -15,7 +15,7 @@ type Usecase struct {
 
 func Init(psql *generated.Client, cfg config.Config, dom domain.Domain) Usecase {
 	result := Usecase{
-		User: user.Init(psql, cfg),
+		User: user.Init(psql, cfg, dom.User, dom.Address),
 		Sale: sale.Init(psql, cfg, dom.Sale),
 	}
 	return result
