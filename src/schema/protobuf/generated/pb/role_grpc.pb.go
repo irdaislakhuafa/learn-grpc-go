@@ -31,7 +31,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RoleServiceClient interface {
 	GetRoles(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*RoleResponsePagination, error)
-	GetRole(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Role, error)
+	GetRole(ctx context.Context, in *GetRoleRequest, opts ...grpc.CallOption) (*Role, error)
 	CreateRole(ctx context.Context, in *CreateRoleRequest, opts ...grpc.CallOption) (*Role, error)
 	UpdateRole(ctx context.Context, in *UpdateRoleRequest, opts ...grpc.CallOption) (*Role, error)
 	DeleteRole(ctx context.Context, in *DeleteRoleRequest, opts ...grpc.CallOption) (*Role, error)
@@ -54,7 +54,7 @@ func (c *roleServiceClient) GetRoles(ctx context.Context, in *PaginationRequest,
 	return out, nil
 }
 
-func (c *roleServiceClient) GetRole(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Role, error) {
+func (c *roleServiceClient) GetRole(ctx context.Context, in *GetRoleRequest, opts ...grpc.CallOption) (*Role, error) {
 	out := new(Role)
 	err := c.cc.Invoke(ctx, RoleService_GetRole_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -95,7 +95,7 @@ func (c *roleServiceClient) DeleteRole(ctx context.Context, in *DeleteRoleReques
 // for forward compatibility
 type RoleServiceServer interface {
 	GetRoles(context.Context, *PaginationRequest) (*RoleResponsePagination, error)
-	GetRole(context.Context, *Empty) (*Role, error)
+	GetRole(context.Context, *GetRoleRequest) (*Role, error)
 	CreateRole(context.Context, *CreateRoleRequest) (*Role, error)
 	UpdateRole(context.Context, *UpdateRoleRequest) (*Role, error)
 	DeleteRole(context.Context, *DeleteRoleRequest) (*Role, error)
@@ -109,7 +109,7 @@ type UnimplementedRoleServiceServer struct {
 func (UnimplementedRoleServiceServer) GetRoles(context.Context, *PaginationRequest) (*RoleResponsePagination, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRoles not implemented")
 }
-func (UnimplementedRoleServiceServer) GetRole(context.Context, *Empty) (*Role, error) {
+func (UnimplementedRoleServiceServer) GetRole(context.Context, *GetRoleRequest) (*Role, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRole not implemented")
 }
 func (UnimplementedRoleServiceServer) CreateRole(context.Context, *CreateRoleRequest) (*Role, error) {
@@ -153,7 +153,7 @@ func _RoleService_GetRoles_Handler(srv interface{}, ctx context.Context, dec fun
 }
 
 func _RoleService_GetRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
+	in := new(GetRoleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -165,7 +165,7 @@ func _RoleService_GetRole_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: RoleService_GetRole_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RoleServiceServer).GetRole(ctx, req.(*Empty))
+		return srv.(RoleServiceServer).GetRole(ctx, req.(*GetRoleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

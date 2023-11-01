@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/irdaislakhuafa/learn-grpc-go/src/business/usecase/user"
-	"github.com/irdaislakhuafa/learn-grpc-go/src/handler/grpc/converter"
+	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/protobuf/converter"
 	"github.com/irdaislakhuafa/learn-grpc-go/src/schema/protobuf/generated/pb"
 )
 
